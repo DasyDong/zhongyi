@@ -203,7 +203,8 @@ class PreviewGenerator:
         self._draw_underline(c)
         self.y_position -= 1.0 * cm
 
-        line4 = f"地址：{self.data.get('地址', '')}"
+        address = self.data.get("地址") or self.data.get("住址", "")
+        line4 = f"地址：{address}"
         c.drawString(2 * cm, self.y_position, line4)
         linephone = f"电话：{self.data.get('电话', '')}"
         phonestring_width = c.stringWidth(linephone, self.font_name, 13)

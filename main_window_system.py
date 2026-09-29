@@ -5,9 +5,10 @@ import shutil
 import weakref
 from PySide6 import QtWidgets
 from PySide6.QtWidgets import QHeaderView, QCalendarWidget, QDialog, QApplication, QTableWidget, \
-    QTableWidgetItem, QVBoxLayout, QAbstractItemView, QMessageBox, QMainWindow, QFileDialog
-from PySide6.QtCore import QDate, QEvent, QPoint, QDateTime, Qt, QTimer
-from PySide6.QtGui import QColor, QDoubleValidator, QScreen, QPixmap
+    QTableWidgetItem, QVBoxLayout, QAbstractItemView, QMessageBox, QMainWindow, QFileDialog, \
+    QCompleter, QLineEdit
+from PySide6.QtCore import QDate, QEvent, QPoint, QDateTime, Qt, QTimer, QStringListModel
+from PySide6.QtGui import QColor, QDoubleValidator, QScreen, QPixmap, QIcon
 from pymysql import Error
 
 from ui_main_window import Ui_MainWindow  # 导入生成的界面类
@@ -154,6 +155,9 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         self.m_tbl_DrugUsage.setEditTriggers(QTableWidget.DoubleClicked |
                                              QTableWidget.SelectedClicked |
                                              QTableWidget.EditKeyPressed)
+        # 点击药物列即可直接输入，输入过程中弹出中药清单补全。
+        self.m_tbl_DrugUsage.cellClicked.connect(self.start_drug_name_edit)
+        self._drug_name_model = QStringListModel(self.load_drug_names(), self)
 
         # 绑定菜单项点击事件
         #self.on_action_jingyanxuanfang.triggered.connect(self.on_action_jingyanxuanfang_key)
@@ -228,6 +232,10 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         self.m_tle_Diagnosis.currentCellChanged.connect(self.handle_Diagnosis_cell_changed)
 
         self.m_tbl_DrugUsage.setColumnHidden(0, True)
+        self.m_tbl_DrugUsage.setRowCount(40)
+        for row in range(40):
+            for column in range(4):
+                self.m_tbl_DrugUsage.setItem(row, column, QTableWidgetItem(""))
         self.m_edtDosesNumber.textChanged.connect(self.calc_drug_total_price)
         self.m_edtAcubNumber.textChanged.connect(self.calc_acub_total_price)
 
@@ -265,6 +273,11 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
 
     def setup_case_report_ui(self):
         """重排为左侧录入区、右侧查询和功能区。"""
+        def clear_layout_items(layout):
+            """移除旧界面布局项，保留控件对象供既有信号和逻辑继续使用。"""
+            while layout.count():
+                layout.takeAt(0)
+
         # 隐藏原有“病证表现/一时辨证”编辑区，避免和病例报告字段重复。
         for widget in (
                 self.bt_title, self.label_4, self.m_edt_SympConcl,
@@ -310,7 +323,6 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
                 self.m_tle_Diagnosis, self.m_edt_searchfilter_DiagnosisD,
                 self.m_edt_DrugDiscrip, self.bt_searchicon, self.bt_searchicon_2):
             widget.hide()
-        self.groupBox_3.setTitle("查询与功能")
         self.m_bt_menu_Acup.hide()
         self.groupBox_3.setStyleSheet("""
             QGroupBox {
@@ -328,6 +340,10 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
                 font-weight: bold;
             }
         """)
+
+        # 原查询/常见病症控件仍在旧布局中，即使隐藏也会被旧伸缩项占位；
+        # 清空旧布局后重新放入新功能面板，确保查询区从右侧顶部开始。
+        clear_layout_items(self.verticalLayout)
 
         # 右侧新功能面板。
         function_panel = QtWidgets.QWidget(self.groupBox_3)
@@ -389,9 +405,22 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
             QPushButton#primarySaveButton:pressed { background: #0d47a1; }
         """)
 
-        query_title = QtWidgets.QLabel("病例查询")
-        query_title.setObjectName("sectionTitle")
-        function_layout.addWidget(query_title)
+        def add_section_title(text, icon_path):
+            """创建与患者资料/中药治疗一致的图标标题行。"""
+            title_row = QtWidgets.QHBoxLayout()
+            title_row.setSpacing(5)
+            title_row.setContentsMargins(0, 0, 0, 0)
+            icon_label = QtWidgets.QLabel(function_panel)
+            icon_label.setFixedSize(25, 25)
+            icon_label.setPixmap(QIcon(icon_path).pixmap(25, 25))
+            title_row.addWidget(icon_label)
+            title = QtWidgets.QLabel(text, function_panel)
+            title.setObjectName("sectionTitle")
+            title_row.addWidget(title)
+            title_row.addStretch(1)
+            function_layout.addLayout(title_row)
+
+        add_section_title("病例查询", ":/Resources/icons/icon_recordsearch_grey.svg")
 
         query_form = QtWidgets.QFormLayout()
         query_form.setFieldGrowthPolicy(QtWidgets.QFormLayout.AllNonFixedFieldsGrow)
@@ -435,9 +464,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         self.m_pbWithoutDiagSyndrome = QtWidgets.QPushButton("", function_panel)
         self.m_pbWithoutDiagSyndrome.hide()
 
-        action_title = QtWidgets.QLabel("就诊操作")
-        action_title.setObjectName("sectionTitle")
-        function_layout.addWidget(action_title)
+        add_section_title("就诊操作", ":/Resources/icons/icon_note_grey.svg")
         action_row = QtWidgets.QVBoxLayout()
         self.m_bt_Visit = QtWidgets.QPushButton("初诊", function_panel)
         self.m_bt_Visit_2 = QtWidgets.QPushButton("复诊", function_panel)
@@ -456,10 +483,10 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         )
         function_layout.addLayout(action_row)
 
-        function_layout.addStretch(1)
-        self.verticalLayout.addWidget(function_panel)
+        # 让右侧功能面板撑满整个分栏高度，查询区从顶部开始，按钮紧随查询区排列。
+        self.verticalLayout.addWidget(function_panel, 1)
         self.verticalLayout.setContentsMargins(8, 8, 8, 8)
-        self.verticalLayout.setAlignment(Qt.AlignTop)
+        self.verticalLayout.setAlignment(Qt.AlignmentFlag(0))
         self.function_panel = function_panel
 
         self.groupBox_2.setTitle("病例报告")
@@ -502,6 +529,8 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         self.case_report_prescription = text_field("case_report_医嘱处方", 120)
         self.case_report_medication_method = text_field("case_report_服药方法", 72)
         self.case_report_contraindication = text_field("case_report_禁忌", 72)
+        self.case_report_special_note = text_field("case_report_备注", 72)
+        self.case_report_special_note.setPlainText("无")
         self.case_report_prescription.setReadOnly(False)
         self.case_report_prescription.setPlaceholderText("可直接修改中药处方，药物之间用两个空格分隔…")
         self.m_tbl_DrugUsage.itemChanged.connect(self._sync_case_report_prescription_from_table)
@@ -514,24 +543,83 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         report_layout.addRow("医嘱处方(单位克)", self.case_report_prescription)
         report_layout.addRow("服药方法", self.case_report_medication_method)
         report_layout.addRow("禁忌", self.case_report_contraindication)
-        report_layout.addRow("创建时间", self.case_report_created_at)
+        report_layout.addRow("备注", self.case_report_special_note)
 
         self.case_report_select_drug = QtWidgets.QPushButton("选择中药处方", report_panel)
         self.case_report_select_drug.clicked.connect(self.handle_drugselect_click)
+        self.m_bt_DeleteDrug = QtWidgets.QPushButton("删除选中药物", self.groupBox_1)
+        self.m_bt_DeleteDrug.setStyleSheet(
+            "QPushButton { background: #d32f2f; color: white; border: 1px solid #a52222; "
+            "border-radius: 5px; padding: 5px 10px; }"
+            "QPushButton:hover { background: #b71c1c; }"
+        )
+        self.m_bt_DeleteDrug.clicked.connect(self.delete_selected_drug)
 
         scroll = QtWidgets.QScrollArea(self.groupBox_2)
         scroll.setWidgetResizable(True)
         scroll.setAlignment(Qt.AlignTop)
         scroll.setFrameShape(QtWidgets.QFrame.NoFrame)
         scroll.setWidget(report_panel)
-        # 插到最前面，避免原界面已隐藏的控件在病例报告上方留下空白。
-        self.verticalLayout_5.insertWidget(0, scroll, 1)
+        # 清除旧病例布局项，避免隐藏控件和旧伸缩项在中间区域留下空白。
+        clear_layout_items(self.verticalLayout_5)
+        self.verticalLayout_5.addWidget(scroll, 1)
         self.verticalLayout_5.setContentsMargins(8, 4, 8, 4)
+        # 中间病例报告滚动区占满高度，避免底部出现大块空白。
+        self.verticalLayout_5.setAlignment(Qt.AlignmentFlag(0))
         self.case_report_panel = scroll
         # 处方选择属于医生输入项，放回左侧中药治疗区域上方。
         self.case_report_select_drug.setParent(self.groupBox_1)
         drug_index = self.verticalLayout_2.indexOf(self.m_tbl_DrugUsage)
         self.verticalLayout_2.insertWidget(drug_index, self.case_report_select_drug)
+        self.verticalLayout_2.insertWidget(drug_index + 1, self.m_bt_DeleteDrug)
+
+    def load_drug_names(self):
+        """读取中药清单，供主界面药物列输入补全使用。"""
+        connection = None
+        try:
+            connection = pymysql.connect(**load_db_config())
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT 药名 FROM 中药 WHERE 药名 IS NOT NULL AND 药名 <> '' ORDER BY 药名")
+                rows = cursor.fetchall()
+            return [str(row[0]).strip() for row in rows if row and row[0]]
+        except Exception as exc:
+            print(f"加载中药清单失败: {exc}")
+            return []
+        finally:
+            if connection:
+                connection.close()
+
+    def start_drug_name_edit(self, row, column):
+        """双击药物列进入编辑，并用中药清单提供自动补全。"""
+        if column != 1:
+            return
+        if self.m_tbl_DrugUsage.item(row, column) is None:
+            self.m_tbl_DrugUsage.setItem(row, column, QTableWidgetItem(""))
+        self.m_tbl_DrugUsage.editItem(self.m_tbl_DrugUsage.item(row, column))
+
+        def attach_completer():
+            editor = QApplication.focusWidget()
+            if not isinstance(editor, QLineEdit):
+                editor = self.m_tbl_DrugUsage.findChild(QLineEdit)
+            if not editor:
+                return
+            completer = QCompleter(self._drug_name_model, editor)
+            completer.setCaseSensitivity(Qt.CaseInsensitive)
+            completer.setFilterMode(Qt.MatchContains)
+            completer.setCompletionMode(QCompleter.PopupCompletion)
+            editor.setCompleter(completer)
+            completer.activated.connect(editor.setText)
+
+        QTimer.singleShot(0, attach_completer)
+
+    def delete_selected_drug(self):
+        """删除中药治疗表格当前选中的药物行。"""
+        row = self.m_tbl_DrugUsage.currentRow()
+        if row < 0:
+            QMessageBox.information(self, "删除药物", "请先选中要删除的药物行")
+            return
+        self.m_tbl_DrugUsage.removeRow(row)
+        self._sync_case_report_prescription_from_table()
 
     def current_patient_id(self):
         row = self.m_tle_Basic_Filter.currentRow()
@@ -580,7 +668,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
             with connection.cursor() as cursor:
                 cursor.execute("""
                     SELECT 编号, 主诉, 现病史, 既往史, 过敏史, 个人史, 诊断,
-                           医嘱处方, 服药方法, 禁忌, 日期时间
+                           医嘱处方, 服药方法, 禁忌, 备注, 日期时间
                     FROM 常规资料 WHERE 编号=%s
                 """, (patient_id,))
                 row = cursor.fetchone()
@@ -598,8 +686,9 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
                 self.case_report_prescription.setPlainText(saved_prescription)
                 self.case_report_medication_method.setPlainText(row[8] or "")
                 self.case_report_contraindication.setPlainText(row[9] or "")
-                self.case_report_created_at.setText(str(row[10] or "保存后生成"))
-                self.patient_created_at_label.setText(f"创建时间：{row[10] or '未保存'}")
+                self.case_report_special_note.setPlainText(row[10] or "无")
+                self.case_report_created_at.setText(str(row[11] or "保存后生成"))
+                self.patient_created_at_label.setText(f"创建时间：{row[11] or '未保存'}")
             else:
                 self.clear_case_report(patient_id)
         except Exception as e:
@@ -617,8 +706,10 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
                      self.case_report_past_history,
                      self.case_report_allergy_history, self.case_report_personal_history,
                      self.case_report_diagnosis, self.case_report_prescription,
-                     self.case_report_medication_method, self.case_report_contraindication):
+                     self.case_report_medication_method, self.case_report_contraindication,
+                     self.case_report_special_note):
             edit.clear()
+        self.case_report_special_note.setPlainText("无")
         diagnosis_item = self.m_tle_PatientInfo.item(4, 1)
         self.case_report_diagnosis.setPlainText(
             diagnosis_item.text() if diagnosis_item and diagnosis_item.text() else ""
@@ -831,8 +922,12 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         self.m_edt_DiagConcl_2.setText("")
         self.m_edt_Diagnote_4.setText("")
         self.m_tbl_DrugUsage.clearContents()
-        for i in range(self.m_tbl_DrugUsage.rowCount()):
-            self.m_tbl_DrugUsage.removeRow(i)
+        self.m_tbl_DrugUsage.setRowCount(40)
+        for row in range(40):
+            self.m_tbl_DrugUsage.setItem(row, 0, QTableWidgetItem(""))
+            self.m_tbl_DrugUsage.setItem(row, 1, QTableWidgetItem(""))
+            self.m_tbl_DrugUsage.setItem(row, 2, QTableWidgetItem(""))
+            self.m_tbl_DrugUsage.setItem(row, 3, QTableWidgetItem(""))
         self.m_edt_acup.setText("")
         self.m_edtDosesNumber.setText("0")
         self.m_edtAcubNumber.setText("0")
@@ -1274,7 +1369,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
             UPDATE `常规资料` SET
             `主诉`=%s, `现病史`=%s, `既往史`=%s, `过敏史`=%s,
             `个人史`=%s, `诊断`=%s, `医嘱处方`=%s,
-            `服药方法`=%s, `禁忌`=%s
+            `服药方法`=%s, `禁忌`=%s, `备注`=%s
             WHERE `编号`=%s
         """, (
             self.case_report_chief_complaint.toPlainText().strip(),
@@ -1286,6 +1381,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
             prescription,
             self.case_report_medication_method.toPlainText().strip(),
             self.case_report_contraindication.toPlainText().strip(),
+            self.case_report_special_note.toPlainText().strip() or "无",
             patient_id,
         ))
 
@@ -1821,6 +1917,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
             self.m_edtAcubPrice.setText(str(row[7] or "0"))  # 针灸费用是第八个字段
             self.m_edtTotalPrice.setText(str(row[8] or "0"))  # 总费用是第九个字段
 
+            # 固定保留 40 个可编辑药物行；空行也可直接双击输入。
             self.m_tbl_DrugUsage.setRowCount(40)
             self.m_tbl_DrugUsage.setColumnCount(4)
 
@@ -1830,7 +1927,11 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
                 if row[drug_index] is not None and row[drug_index] != "":
                     nDrugRows += 1
 
-            self.m_tbl_DrugUsage.setRowCount(nDrugRows)
+            for i in range(40):
+                self.m_tbl_DrugUsage.setItem(i, 0, QtWidgets.QTableWidgetItem(number))
+                self.m_tbl_DrugUsage.setItem(i, 1, QtWidgets.QTableWidgetItem(""))
+                self.m_tbl_DrugUsage.setItem(i, 2, QtWidgets.QTableWidgetItem(""))
+                self.m_tbl_DrugUsage.setItem(i, 3, QtWidgets.QTableWidgetItem(""))
 
             for i in range(nDrugRows):
                 drug_index = 9 + i if i < 20 else 71 + (i - 20)
@@ -1839,8 +1940,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
                 drug = str(row[drug_index])
                 usage = row[usage_index]
                 decoction = row[decoction_index]
-                self.m_tbl_DrugUsage.setItem(i, 0, QtWidgets.QTableWidgetItem(number))
-                # 设置药物和用量列
+                # 覆盖空行中的药物和用量列
                 self.m_tbl_DrugUsage.setItem(i, 1, QtWidgets.QTableWidgetItem(str(drug)))
                 self.m_tbl_DrugUsage.setItem(i, 2, QtWidgets.QTableWidgetItem(str(usage)))
                 self.m_tbl_DrugUsage.setItem(i, 3, QtWidgets.QTableWidgetItem(str(decoction)))

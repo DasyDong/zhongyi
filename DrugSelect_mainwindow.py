@@ -1,7 +1,7 @@
 from functools import partial
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QStringListModel, QTimer
 from PySide6 import QtWidgets
-from PySide6.QtWidgets import QTableWidget, QDialog, QTableWidgetItem
+from PySide6.QtWidgets import QTableWidget, QDialog, QTableWidgetItem, QCompleter, QLineEdit
 from PySide6.QtWidgets import QAbstractItemView
 from ui_DrugSelec_window import Ui_DialogDrugSelec  # 导入生成的对话框界面类
 from DatabaseUtil import myDatabaseUtil
@@ -26,6 +26,7 @@ class MyDrugSelectWindow(QDialog, Ui_DialogDrugSelec):
 
         self.setupUi(self)  # 加载界面
         self.m_tabWidget_Fomula.setCurrentIndex(0)
+        self.ensure_formula_drug_columns()
 
 
         self.m_tle_FormulaDrugComb_2.setColumnCount(3)
@@ -35,6 +36,12 @@ class MyDrugSelectWindow(QDialog, Ui_DialogDrugSelec):
         self.m_tle_FormulaDrugComb.setColumnCount(3)
         self.m_tle_FormulaDrugComb.setHorizontalHeaderLabels(['编号','药物', '剂量'])
         self.m_tle_FormulaDrugComb.setColumnHidden(0,True)
+        self.m_tle_FormulaDrugComb_2.setEditTriggers(
+            QAbstractItemView.DoubleClicked | QAbstractItemView.SelectedClicked |
+            QAbstractItemView.EditKeyPressed
+        )
+        self.m_tle_FormulaDrugComb_2.cellClicked.connect(self.start_formula_drug_edit)
+        self._drug_name_model = QStringListModel(self.load_drug_names(), self)
 
         self.m_edt_FormulaSearch.textChanged.connect(
             partial(self.m_databaseUtil.load_tableWidget_data, self.m_tle_ExpdFormula, columnLabels=['编号', '方名'],
@@ -84,6 +91,65 @@ class MyDrugSelectWindow(QDialog, Ui_DialogDrugSelec):
             self.m_tle_ExpdFormula.setFocus()
             item = self.m_tle_ExpdFormula.item(0,1)
             self.on_row_ExpdFormula_click(item)
+
+    def ensure_formula_drug_columns(self):
+        """让三类处方选择表支持药物/剂量 1~40。"""
+        import pymysql
+        from Database_connection import load_db_config
+        conn = pymysql.connect(**load_db_config())
+        try:
+            with conn.cursor() as cursor:
+                for table in ("经验选方", "辨病选方", "方剂选方"):
+                    cursor.execute(f"SHOW COLUMNS FROM `{table}`")
+                    existing = {row[0] for row in cursor.fetchall()}
+                    for prefix in ("药物", "剂量"):
+                        for number in range(21, 41):
+                            column = f"{prefix}{number}"
+                            if column not in existing:
+                                cursor.execute(f"ALTER TABLE `{table}` ADD COLUMN `{column}` TEXT NULL")
+            conn.commit()
+        finally:
+            conn.close()
+
+    @staticmethod
+    def formula_select_sql(table):
+        columns = [f"药物{i}" for i in range(1, 41)]
+        columns += [f"剂量{i}" for i in range(1, 41)]
+        columns.append("说明")
+        return f"SELECT {', '.join(columns)} FROM `{table}` WHERE 编号 = %s"
+
+    def load_drug_names(self):
+        """读取完整中药清单，供处方选择区输入补全。"""
+        import pymysql
+        from Database_connection import load_db_config
+        conn = pymysql.connect(**load_db_config())
+        try:
+            with conn.cursor() as cursor:
+                cursor.execute("SELECT 药名 FROM 中药 WHERE 药名 IS NOT NULL AND 药名 <> '' ORDER BY 药名")
+                return [str(row[0]).strip() for row in cursor.fetchall() if row and row[0]]
+        finally:
+            conn.close()
+
+    def start_formula_drug_edit(self, row, column):
+        """处方加减区点击药物列时，显示中药名称自动补全下拉。"""
+        if column != 1:
+            return
+        if self.m_tle_FormulaDrugComb_2.item(row, column) is None:
+            self.m_tle_FormulaDrugComb_2.setItem(row, column, QTableWidgetItem(""))
+        self.m_tle_FormulaDrugComb_2.editItem(self.m_tle_FormulaDrugComb_2.item(row, column))
+
+        def attach_completer():
+            editor = self.m_tle_FormulaDrugComb_2.findChild(QLineEdit)
+            if not editor:
+                return
+            completer = QCompleter(self._drug_name_model, editor)
+            completer.setCaseSensitivity(Qt.CaseInsensitive)
+            completer.setFilterMode(Qt.MatchContains)
+            completer.setCompletionMode(QCompleter.PopupCompletion)
+            editor.setCompleter(completer)
+            completer.activated.connect(editor.setText)
+
+        QTimer.singleShot(0, attach_completer)
 
 
     def handle_AddtoBt2_click(self):
@@ -223,10 +289,7 @@ class MyDrugSelectWindow(QDialog, Ui_DialogDrugSelec):
         row = item.row()
         id = self.m_tle_ExpdFormula.item(row, 0).text()
 
-        data = self.m_databaseUtil.query_database_info(
-            """SELECT 药物1,药物2,药物3,药物4,药物5,药物6,药物7,药物8,药物9,药物10,药物11,药物12,药物13,药物14,药物15,药物16,药物17,药物18,药物19,药物20,
-            剂量1,剂量2,剂量3,剂量4,剂量5,剂量6,剂量7,剂量8,剂量9,剂量10,剂量11,剂量12,剂量13,剂量14,剂量15,剂量16,剂量17,剂量18,剂量19,剂量20,说明 FROM 经验选方 WHERE 编号 = %s""",
-            id)
+        data = self.m_databaseUtil.query_database_info(self.formula_select_sql("经验选方"), id)
         if data:
             self.display_drug_info(data)
 
@@ -245,10 +308,7 @@ class MyDrugSelectWindow(QDialog, Ui_DialogDrugSelec):
         row = item.row()
         id = self.m_tle_DisFormula.item(row, 0).text()
 
-        data = self.m_databaseUtil.query_database_info(
-            """SELECT 药物1,药物2,药物3,药物4,药物5,药物6,药物7,药物8,药物9,药物10,药物11,药物12,药物13,药物14,药物15,药物16,药物17,药物18,药物19,药物20,
-            剂量1,剂量2,剂量3,剂量4,剂量5,剂量6,剂量7,剂量8,剂量9,剂量10,剂量11,剂量12,剂量13,剂量14,剂量15,剂量16,剂量17,剂量18,剂量19,剂量20,说明 FROM 辨病选方 WHERE 编号 = %s""",
-            id)
+        data = self.m_databaseUtil.query_database_info(self.formula_select_sql("辨病选方"), id)
         if data:
             self.display_drug_info(data)
 
@@ -267,10 +327,7 @@ class MyDrugSelectWindow(QDialog, Ui_DialogDrugSelec):
         row = item.row()
         id = self.m_tle_ClassicFormula.item(row, 0).text()
 
-        data = self.m_databaseUtil.query_database_info(
-            """SELECT 药物1,药物2,药物3,药物4,药物5,药物6,药物7,药物8,药物9,药物10,药物11,药物12,药物13,药物14,药物15,药物16,药物17,药物18,药物19,药物20,
-            剂量1,剂量2,剂量3,剂量4,剂量5,剂量6,剂量7,剂量8,剂量9,剂量10,剂量11,剂量12,剂量13,剂量14,剂量15,剂量16,剂量17,剂量18,剂量19,剂量20,说明 FROM 方剂选方 WHERE 编号 = %s""",
-            id)
+        data = self.m_databaseUtil.query_database_info(self.formula_select_sql("方剂选方"), id)
         if data:
             self.display_drug_info(data)
 
@@ -294,16 +351,16 @@ class MyDrugSelectWindow(QDialog, Ui_DialogDrugSelec):
             self.m_edt_DrugDiscrip.clear()
             self.m_edt_DrugDiscrip.append(str(data[len(data)-1]))
         nDataLen:int = 0
-        for i in range(20):
+        for i in range(40):
             if len(str(data[i])) >0 and data[i] != None:
                 nDataLen += 1
 
         self.m_tle_FormulaDrugComb.setRowCount(nDataLen)
         # 填充数据
         nIndex:int = 0
-        for i in range(20):
+        for i in range(40):
             drug:str = str(data[i])  # 药物1~20（索引0到19）
-            dose:str = str(data[20 + i])  # 用量1~20（索引20到39）
+            dose:str = str(data[40 + i])  # 用量1~40
             if(len(drug)<= 0 or data[i] is None):
                 continue
 

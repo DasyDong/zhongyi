@@ -89,7 +89,8 @@ class CaseReportGenerator(PreviewGenerator):
         self.y_position -= 1.0 * cm
 
         # 地址独立一行，不再与电话并排。
-        c.drawString(2 * cm, self.y_position, f"地址：{self.data.get('地址', '')}")
+        address = self.data.get("地址") or self.data.get("住址", "")
+        c.drawString(2 * cm, self.y_position, f"地址：{address}")
         self._draw_underline(c)
         self.y_position -= 1.0 * cm
 
@@ -100,7 +101,57 @@ class CaseReportGenerator(PreviewGenerator):
         self._draw_underline(c)
         self.y_position -= 0.5 * cm
 
+    def _draw_plain_sections(self, c, new_page, fields):
+        """以无表格分区绘制报告正文，长内容自动换行且不互相覆盖。"""
+        min_y = self.margin + self.footer_height
+        content_width = self.page_width - 4 * cm
+        label_style = ParagraphStyle(name="plain_label", fontName=self.font_name,
+                                     fontSize=11, leading=15, alignment=TA_LEFT, wordWrap="CJK")
+        value_style = ParagraphStyle(name="plain_value", fontName=CASE_NORMAL_FONT,
+                                     fontSize=11, leading=15, alignment=TA_LEFT, wordWrap="CJK")
+
+        def safe_text(value):
+            return ("" if value is None else str(value)).replace("&", "&amp;").replace(
+                "<", "&lt;").replace(">", "&gt;").replace("\n", "<br/>")
+
+        for label, value in fields:
+            label_para = Paragraph(f"<b>{safe_text(label)}</b>", label_style)
+            value_text = safe_text(value)
+            if label == "医嘱处方(单位克)":
+                value_text = value_text.replace(" ", "&#160;")
+            value_para = Paragraph(value_text, value_style)
+
+            for paragraph in (label_para, value_para):
+                available = max(self.y_position - min_y, 1)
+                _, height = paragraph.wrap(content_width, available)
+                if self.y_position - height < min_y:
+                    new_page()
+                    available = max(self.y_position - min_y, 1)
+                    _, height = paragraph.wrap(content_width, available)
+                paragraph.drawOn(c, 2 * cm, self.y_position - height)
+                self.y_position -= height
+            # 每个区域之间留出空白，并画一条轻分隔线，不使用表格边框。
+            self.y_position -= 0.18 * cm
+            c.setStrokeColor(colors.HexColor("#b0b0b0"))
+            c.setLineWidth(0.5)
+            c.line(2 * cm, self.y_position, self.page_width - 2 * cm, self.y_position)
+            self.y_position -= 0.28 * cm
+
     def _draw_case_report_content(self, c, new_page):
+        fields = (
+            ("主诉", self.case_report.get("主诉", "")),
+            ("现病史", self.case_report.get("现病史", "")),
+            ("既往史", self.case_report.get("既往史", "")),
+            ("过敏史", self.case_report.get("过敏史", "")),
+            ("个人史", self.case_report.get("个人史", "")),
+            ("诊断", self.case_report.get("诊断", self.data.get("诊断", ""))),
+            ("医嘱处方(单位克)", self._report_prescription()),
+            ("服药方法", self.case_report.get("服药方法", "")),
+            ("禁忌", self.case_report.get("禁忌", "")),
+        )
+        self._draw_plain_sections(c, new_page, fields)
+
+    def _draw_case_report_table(self, c, new_page):
         """用两列表格绘制病例字段，内容单元格按文字长度自适应并自动分页。"""
         min_y = self.margin + self.footer_height
         content_width = self.page_width - 4 * cm
@@ -235,6 +286,25 @@ class PrescriptionReportGenerator(CaseReportGenerator):
     """精简处方报告：保留患者信息及处方相关字段，沿用病例报告版式。"""
 
     def _draw_case_report_content(self, c, new_page):
+        original = self.case_report
+        self.case_report = {
+            "诊断": original.get("诊断", self.data.get("诊断", "")),
+            "医嘱处方": original.get("医嘱处方", ""),
+            "服药方法": original.get("服药方法", ""),
+            "禁忌": original.get("禁忌", ""),
+        }
+        try:
+            fields = (
+                ("诊断", self.case_report.get("诊断", "")),
+                ("医嘱处方(单位克)", self._report_prescription()),
+                ("服药方法", self.case_report.get("服药方法", "")),
+                ("禁忌事项", self.case_report.get("禁忌", "")),
+            )
+            self._draw_plain_sections(c, new_page, fields)
+        finally:
+            self.case_report = original
+
+    def _draw_case_report_table(self, c, new_page):
         original = self.case_report
         self.case_report = {
             "诊断": original.get("诊断", self.data.get("诊断", "")),

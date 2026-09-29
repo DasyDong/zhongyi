@@ -333,6 +333,13 @@ if __name__ == "__main__":
     system_font.setPointSize(10)
     system_font.setStyleStrategy(QFont.StyleStrategy.PreferAntialias)
     app.setFont(system_font)
+    # 全部功能界面的保存/删除按钮统一颜色；对象自身样式可继续覆盖布局细节。
+    app.setStyleSheet("""
+        QPushButton[text=\"保存\"] { background-color: #1976d2; color: white; border: 1px solid #125aa0; }
+        QPushButton[text=\"保存\"]:hover { background-color: #1565c0; }
+        QPushButton[text=\"删除\"] { background-color: #d32f2f; color: white; border: 1px solid #a52222; }
+        QPushButton[text=\"删除\"]:hover { background-color: #b71c1c; }
+    """)
 
     if not os.path.exists("Link_loop.enc"):
         from Database_connection import check_and_show_config
