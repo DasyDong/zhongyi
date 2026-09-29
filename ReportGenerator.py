@@ -17,6 +17,8 @@ FONT_DEFINITIONS = [
     {'name': 'SimHei', 'path': 'simhei.ttf'},         # 黑体
     {'name': 'FangSong', 'path': 'simfang.ttf'},      # 仿宋
     {'name': 'KaiTi', 'path': 'simkai.ttf'},          # 楷体
+    {'name': 'Songti', 'path': '/System/Library/Fonts/Supplemental/Songti.ttc'},
+    {'name': 'STHeiti', 'path': '/System/Library/Fonts/STHeiti Medium.ttc'},
 ]
 
 # 尝试注册字体，选择第一个可用的
@@ -30,7 +32,7 @@ for font in FONT_DEFINITIONS:
         print(f"字体注册失败 {font['name']}: {str(e)}")
 
 if not registered_font_name:
-    raise RuntimeError("无法注册任何中文字体，请检查字体文件是否存在")
+    registered_font_name = 'Helvetica'
 
 
 class myReporter(object):

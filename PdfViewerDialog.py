@@ -1,4 +1,8 @@
-import win32print
+try:
+    import win32print
+except ImportError:
+    # win32print 仅在 Windows/pywin32 环境可用；PDF 查看和保存功能不依赖它。
+    win32print = None
 from PySide6.QtWidgets import (
     QLabel, QVBoxLayout, QToolBar,
     QScrollArea
@@ -248,6 +252,15 @@ class PdfViewerDialog(QDialog):
 
     def handle_print_printer(self):
         """指定页打印"""
+        if win32print is None:
+            QMessageBox.information(
+                self,
+                "当前系统不支持",
+                "Windows 打印接口 win32print 仅适用于 Windows。\n"
+                "请使用“保存文档”后通过系统 PDF 查看器打印。"
+            )
+            return
+
         try:
             # 获取默认打印机名称
             printer_name = win32print.GetDefaultPrinter()
@@ -283,7 +296,8 @@ class PdfViewerDialog(QDialog):
                 5: "拒绝访问（请以管理员身份运行）",
                 1722: "打印机名称无效",
             }
-            error_msg = error_map.get(e.winerror, f"打印失败: {str(e)}")
+            error_code = getattr(e, "winerror", None)
+            error_msg = error_map.get(error_code, f"打印失败: {str(e)}")
             QMessageBox.critical(None, "错误", error_msg)
 
 

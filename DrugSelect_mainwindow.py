@@ -185,9 +185,9 @@ class MyDrugSelectWindow(QDialog, Ui_DialogDrugSelec):
     def handle_AddtoBt_click(self):
         self.m_databaseUtil.copy_tablewidget_content(self.m_tle_FormulaDrugComb_2,self.m_tle_FormulaDrugComb)
         nRowCount = self.m_tle_FormulaDrugComb_2.rowCount()
-        if nRowCount <= 20:
-            self.m_tle_FormulaDrugComb_2.setRowCount(20)
-            for i in range(20-nRowCount):
+        if nRowCount <= 40:
+            self.m_tle_FormulaDrugComb_2.setRowCount(40)
+            for i in range(40-nRowCount):
                 self.m_tle_FormulaDrugComb_2.setItem(i+nRowCount, 0, QtWidgets.QTableWidgetItem(i+nRowCount))
                 self.m_tle_FormulaDrugComb_2.setItem(i+nRowCount, 1, QtWidgets.QTableWidgetItem(""))
                 self.m_tle_FormulaDrugComb_2.setItem(i+nRowCount, 2, QtWidgets.QTableWidgetItem(""))
@@ -199,7 +199,7 @@ class MyDrugSelectWindow(QDialog, Ui_DialogDrugSelec):
         drugnameStr = self.m_tle_FormulaSelDruglist.item(row, 1).text()
         nIndex:int = 0
         bFindStr:bool = False
-        for i in range(20):
+        for i in range(40):
 
             item = self.m_tle_FormulaDrugComb_2.item(i,1)
             if item is None:

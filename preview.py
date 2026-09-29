@@ -21,6 +21,8 @@ FONT_DEFINITIONS = [
     {'name': 'SimHei', 'path': 'simhei.ttf'},  # 黑体
     {'name': 'FangSong', 'path': 'simfang.ttf'},  # 仿宋
     {'name': 'KaiTi', 'path': 'simkai.ttf'},  # 楷体
+    {'name': 'Songti', 'path': '/System/Library/Fonts/Supplemental/Songti.ttc'},
+    {'name': 'STHeiti', 'path': '/System/Library/Fonts/STHeiti Medium.ttc'},
 ]
 
 # 尝试注册字体，选择第一个可用的
@@ -34,7 +36,7 @@ for font in FONT_DEFINITIONS:
         print(f"字体注册失败 {font['name']}: {str(e)}")
 
 if not registered_font_name:
-    raise RuntimeError("无法注册任何中文字体，请检查字体文件是否存在")
+    registered_font_name = 'Helvetica'
 
 
 class PreviewGenerator:
@@ -135,21 +137,8 @@ class PreviewGenerator:
         base_data = cursor.fetchone() or {"诊所名称": "", "处方抬头": ""}
 
         # 获取常规资料
-        cursor.execute("""
-            SELECT 
-                主治医生, 病历号, 诊金,
-                住址 AS 地址, 电话,
-                姓名, 性别, 年龄, 诊断, 日期时间, 辨证, 用法, 剂数, 
-                针灸或其他, 针灸次数, 药费, 针灸费用, 总费用, 备注,
-                病证, 药物1, 药物2, 药物3, 药物4, 药物5, 药物6, 药物7, 药物8, 药物9, 药物10,
-                药物11, 药物12, 药物13, 药物14, 药物15, 药物16, 药物17, 药物18, 药物19, 药物20,
-                用量1, 用量2, 用量3, 用量4, 用量5, 用量6, 用量7, 用量8, 用量9, 用量10,
-                用量11, 用量12, 用量13, 用量14, 用量15, 用量16, 用量17, 用量18, 用量19, 用量20,
-                先煎后下1, 先煎后下2, 先煎后下3, 先煎后下4, 先煎后下5, 先煎后下6, 先煎后下7, 先煎后下8, 先煎后下9, 先煎后下10,
-                先煎后下11, 先煎后下12, 先煎后下13, 先煎后下14, 先煎后下15, 先煎后下16, 先煎后下17, 先煎后下18, 先煎后下19, 先煎后下20
-            FROM 常规资料 
-            WHERE 编号 = %s
-        """, (self.patient_id,))
+        # 统一读取整行，新增的 21~40 味字段无需再次维护显式列清单。
+        cursor.execute("SELECT * FROM 常规资料 WHERE 编号 = %s", (self.patient_id,))
         medical_data = cursor.fetchone() or {}
 
         conn.commit()
@@ -309,7 +298,7 @@ class PreviewGenerator:
 
         # 4. 打印药品信息（成对显示剂数）
         drug_data = []
-        for i in range(1, 21):
+        for i in range(1, 41):
             if self.data.get(f"药物{i}", "") and self.data.get(f"用量{i}", ""):
                 drug = self.data.get(f"药物{i}", "").strip()
                 dosage = self.data.get(f"用量{i}", "").strip() + "克"

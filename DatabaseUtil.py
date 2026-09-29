@@ -60,12 +60,14 @@ class myDatabaseUtil(object):
                         for row_idx, row_data in enumerate(results):
                             tlb_widget.insertRow(row_idx)
                             for col_idx, col_data in enumerate(row_data):
-                                item = QTableWidgetItem(str(col_data) if col_data is not None else "")
+                                # Qt 文本控件不接受数据库中的 NUL 字符，显示前清理。
+                                display_value = "" if col_data is None else str(col_data).replace("\x00", "")
+                                item = QTableWidgetItem(display_value)
                                 tlb_widget.setItem(row_idx, col_idx, item)
                     # 5. 自动调整列宽
                     tlb_widget.resizeColumnsToContents()
             except Exception as e:
-                QMessageBox.warning(self, "查询错误", f"搜索失败: {str(e)}")
+                QMessageBox.warning(None, "查询错误", f"搜索失败: {str(e)}")
         except pymysql.Error as e:
            QMessageBox.critical(None, "数据库错误", f"数据库操作失败:\n{str(e)}")  # 修复self参数问题
 
@@ -90,17 +92,17 @@ class myDatabaseUtil(object):
                 if result!=0:
                     return result
                 else:
-                    QMessageBox.warning(self, '提示', '未找到该患者的记录')
+                    QMessageBox.warning(None, '提示', '未找到该患者的记录')
                     return None
         except pymysql.Error as e:
             # 检查错误码（表不存在的错误码通常是 1146）
             if e.args[0] == 1146:
                 print("错误：数据库表不存在！")
-                QMessageBox.critical(self, '数据库错误', f'错误：数据库表不存在！: {str(e)}')
+                QMessageBox.critical(None, '数据库错误', f'错误：数据库表不存在！: {str(e)}')
             else:
-                QMessageBox.critical(self, '数据库错误', f'数据库错误: {str(e)}')
+                QMessageBox.critical(None, '数据库错误', f'数据库错误: {str(e)}')
         except pymysql.Error as e:
-            QMessageBox.critical(self, '数据库错误', f'数据库操作失败: {str(e)}')
+            QMessageBox.critical(None, '数据库错误', f'数据库操作失败: {str(e)}')
         finally:
             if connection and connection.open:
                 connection.close()

@@ -64,6 +64,10 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         self.m_databaseUtil = myDatabaseUtil()
         self.current_image_path = None  # 初始化为None
         self.current_user_id = user_id
+        self._last_saved_patient_id = None
+        self._active_patient_id = None
+        self.ensure_case_report_table()
+        self.setup_case_report_ui()
 
         #------------设置初始化窗口中groupbox默认占比 start----------------
         # 安装事件过滤器以监听groupBox_3的显示/隐藏事件
@@ -73,6 +77,13 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         # ------------设置初始化窗口中groupbox默认占比 end----------------
         # 强制初始化表头（即使无数据）
         self.display_patient_info(None)
+        # 病症、诊断由病例报告字段维护，不在患者资料表中重复展示。
+        self.m_tle_PatientInfo.setRowHidden(3, True)
+        self.m_tle_PatientInfo.setRowHidden(4, True)
+        self.m_tle_PatientInfo.setRowHidden(1, False)
+        self.m_tle_PatientInfo.setRowHidden(2, False)
+        self.m_tle_PatientInfo.setMinimumHeight(250)
+        self.m_tle_PatientInfo.setMaximumHeight(300)
 
         # 确保初始有选中行
         if self.m_tle_Basic_Filter.rowCount() > 0:
@@ -139,14 +150,17 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         # self.m_tle_PatientInfo.setEditTriggers(QAbstractItemView.NoEditTriggers)  # 禁用直接编辑
         self.m_tle_ClinicalSymptom.setEditTriggers(QAbstractItemView.NoEditTriggers)  # 禁用直接编辑
         self.m_tle_Diagnosis.setEditTriggers(QAbstractItemView.NoEditTriggers)  # 禁用直接编辑
-        self.m_tbl_DrugUsage.setEditTriggers(QTableWidget.NoEditTriggers)
+        # 中药名称、用量、煎法均允许直接编辑。
+        self.m_tbl_DrugUsage.setEditTriggers(QTableWidget.DoubleClicked |
+                                             QTableWidget.SelectedClicked |
+                                             QTableWidget.EditKeyPressed)
 
         # 绑定菜单项点击事件
         #self.on_action_jingyanxuanfang.triggered.connect(self.on_action_jingyanxuanfang_key)
         #self.on_action_bianbingxuanfang.triggered.connect(self.on_action_bianbingxuanfang_key)
         self.m_bt_4_DateSearch.clicked.connect(self.handle_search_click)
         self.m_bt_DrugSelect_3.clicked.connect(self.handle_drugselect_click)
-        self.m_pbWithDiagSyndrome.clicked.connect(self.handle_withdiagprint_click)
+        self.m_pbWithDiagSyndrome.clicked.connect(self.handle_case_report_preview)
         self.m_pbWithoutDiagSyndrome.clicked.connect(self.handle_withoutdiagprint_click)
         self.m_bt_Visit_2.clicked.connect(self.handle_secondvisit_click)
         self.m_bt_Visit.clicked.connect(self.handle_firstvisit_click)
@@ -224,6 +238,392 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
 
             self.on_row_basic_filter_click(item)
 
+    def ensure_case_report_table(self):
+        """初始化统一就诊表字段：患者资料和病例报告共用常规资料一行。"""
+        connection = None
+        try:
+            connection = pymysql.connect(**load_db_config())
+            with connection.cursor() as cursor:
+                cursor.execute("SHOW COLUMNS FROM `常规资料`")
+                existing = {row[0] for row in cursor.fetchall()}
+                for column in ("主诉", "现病史", "既往史", "过敏史", "个人史",
+                               "医嘱处方", "服药方法", "禁忌"):
+                    if column not in existing:
+                        cursor.execute(f"ALTER TABLE `常规资料` ADD COLUMN `{column}` TEXT NULL")
+                # 新系统支持 40 味中药；保留原有 1~20 字段，补齐 21~40。
+                for prefix in ("药物", "用量", "先煎后下"):
+                    for number in range(21, 41):
+                        column = f"{prefix}{number}"
+                        if column not in existing:
+                            cursor.execute(f"ALTER TABLE `常规资料` ADD COLUMN `{column}` TEXT NULL")
+            connection.commit()
+        except Exception as e:
+            QMessageBox.warning(self, "病例报告", f"初始化病例报告表失败：{e}")
+        finally:
+            if connection:
+                connection.close()
+
+    def setup_case_report_ui(self):
+        """重排为左侧录入区、右侧查询和功能区。"""
+        # 隐藏原有“病证表现/一时辨证”编辑区，避免和病例报告字段重复。
+        for widget in (
+                self.bt_title, self.label_4, self.m_edt_SympConcl,
+                self.bt_title_2, self.label_5, self.m_edt_DiagConcl_2,
+                self.m_bt_DrugSelect_3):
+            widget.hide()
+
+        # 隐藏针灸/其他疗法、用法、备注和计价展示，保留中药表格作为开方区。
+        for widget in (
+                self.bt_title_4, self.label_20, self.m_edt_acup,
+                self.bt_title_6, self.label_12, self.m_edt_Diagnote_4,
+                self.label_9, self.m_cbUseage,
+                self.label_13, self.m_edtDosesNumber, self.label_16,
+                self.m_edtDosesPrice, self.label_15, self.m_edtAcubNumber,
+                self.label_11, self.label_14, self.label_17, self.m_edtAcubPrice,
+                self.label_6, self.label_18, self.m_edtTotalPrice,
+                self.m_pbPreview, self.m_pbWithDiagSyndrome,
+                self.m_pbWithoutDiagSyndrome,
+                self.line_2, self.line, self.line_13, self.line_4,
+                self.line_7, self.line_8, self.line_11, self.line_12):
+            widget.hide()
+
+        # 患者资料不再预留照片位置，释放最左侧的横向空间。
+        self.label_PatientPhoto.hide()
+        self.horizontalLayout_21.setContentsMargins(0, 0, 0, 0)
+
+        # 移除原病例查询区中的旧控件，后面把同一批功能重建到最右侧。
+        for widget in (
+                self.bt_title_1, self.label_21, self.m_tle_Basic_Filter,
+                self.line_3, self.label, self.m_edt_searchfilter,
+                self.label_2, self.m_edt_searchfilter_DiagnosisP,
+                self.m_edt_searchfilter_DateStart, self.label_3,
+                self.m_edt_searchfilter_DateEnd, self.m_bt_4_DateSearch,
+                self.line_9, self.m_bt_Visit, self.m_bt_Visit_2,
+                self.m_bt_Save, self.m_bt_Del):
+            widget.hide()
+
+        # 完全移除常见病症表现和常用辨证处方区域。
+        for child in self.groupBox_3.findChildren(QtWidgets.QWidget):
+            child.hide()
+        for widget in (
+                self.m_tle_ClinicalSymptom, self.m_edt_searchfilter_ClinicalSymptom,
+                self.m_tle_Diagnosis, self.m_edt_searchfilter_DiagnosisD,
+                self.m_edt_DrugDiscrip, self.bt_searchicon, self.bt_searchicon_2):
+            widget.hide()
+        self.groupBox_3.setTitle("查询与功能")
+        self.m_bt_menu_Acup.hide()
+        self.groupBox_3.setStyleSheet("""
+            QGroupBox {
+                background-color: rgba(169, 208, 107, 155);
+                border: 1px solid rgb(190, 190, 190);
+                border-radius: 10px;
+                margin-top: 10px;
+                padding: 8px;
+            }
+            QGroupBox::title {
+                subcontrol-origin: margin;
+                left: 12px;
+                padding: 0 6px;
+                color: #263238;
+                font-weight: bold;
+            }
+        """)
+
+        # 右侧新功能面板。
+        function_panel = QtWidgets.QWidget(self.groupBox_3)
+        function_layout = QtWidgets.QVBoxLayout(function_panel)
+        function_layout.setContentsMargins(8, 8, 8, 8)
+        function_layout.setSpacing(10)
+        function_layout.setAlignment(Qt.AlignTop)
+        function_panel.setObjectName("functionPanel")
+        function_panel.setStyleSheet("""
+            QWidget#functionPanel { background: transparent; }
+            QLabel { color: #263238; font-weight: normal; }
+            QLabel#sectionTitle {
+                color: #263238;
+                font-size: 14pt;
+                font-weight: bold;
+                padding: 5px 2px;
+                border-bottom: 1px solid rgba(120, 150, 80, 150);
+            }
+            QLineEdit {
+                background: rgba(248, 248, 248, 220);
+                border: 1px solid #b8c99b;
+                border-radius: 4px;
+                padding: 5px;
+                color: #202020;
+            }
+            QTableWidget {
+                background: rgba(248, 248, 248, 220);
+                alternate-background-color: rgba(231, 242, 211, 220);
+                border: 1px solid #b8c99b;
+                border-radius: 4px;
+                gridline-color: #c4d2b5;
+                color: #202020;
+            }
+            QHeaderView::section {
+                background: #d7e9b8;
+                color: #263238;
+                border: none;
+                border-bottom: 1px solid #b8c99b;
+                padding: 5px;
+                font-weight: bold;
+            }
+            QPushButton {
+                background: rgba(248, 248, 248, 230);
+                border: 1px solid #9db477;
+                border-radius: 5px;
+                padding: 6px 10px;
+                color: #263238;
+                font-weight: bold;
+            }
+            QPushButton:hover { background: #d7e9b8; }
+            QPushButton:pressed { background: #b9d889; }
+            QPushButton#primarySaveButton {
+                background: #1976d2;
+                border-color: #125aa0;
+                color: white;
+                font-weight: bold;
+            }
+            QPushButton#primarySaveButton:hover { background: #1565c0; }
+            QPushButton#primarySaveButton:pressed { background: #0d47a1; }
+        """)
+
+        query_title = QtWidgets.QLabel("病例查询")
+        query_title.setObjectName("sectionTitle")
+        function_layout.addWidget(query_title)
+
+        query_form = QtWidgets.QFormLayout()
+        query_form.setFieldGrowthPolicy(QtWidgets.QFormLayout.AllNonFixedFieldsGrow)
+        query_form.setLabelAlignment(Qt.AlignRight | Qt.AlignVCenter)
+        query_form.setHorizontalSpacing(12)
+        self.m_edt_searchfilter = QtWidgets.QLineEdit(function_panel)
+        self.m_edt_searchfilter.setPlaceholderText("按姓名拼音查询")
+        self.m_edt_searchfilter_DiagnosisP = QtWidgets.QLineEdit(function_panel)
+        self.m_edt_searchfilter_DiagnosisP.setPlaceholderText("按诊断拼音查询")
+        query_form.addRow("姓名", self.m_edt_searchfilter)
+        query_form.addRow("诊断", self.m_edt_searchfilter_DiagnosisP)
+        function_layout.addLayout(query_form)
+
+        date_row = QtWidgets.QHBoxLayout()
+        date_row.setSpacing(8)
+        self.m_edt_searchfilter_DateStart = QtWidgets.QLineEdit(function_panel)
+        self.m_edt_searchfilter_DateEnd = QtWidgets.QLineEdit(function_panel)
+        self.m_bt_4_DateSearch = QtWidgets.QPushButton("查询", function_panel)
+        date_row.addWidget(self.m_edt_searchfilter_DateStart)
+        date_row.addWidget(QtWidgets.QLabel("至", function_panel))
+        date_row.addWidget(self.m_edt_searchfilter_DateEnd)
+        date_row.addWidget(self.m_bt_4_DateSearch)
+        function_layout.addLayout(date_row)
+
+        self.m_tle_Basic_Filter = QtWidgets.QTableWidget(function_panel)
+        self.m_tle_Basic_Filter.setColumnCount(6)
+        self.m_tle_Basic_Filter.setHorizontalHeaderLabels(
+            ["编号", "姓名", "性别", "年龄", "诊断", "日期时间"])
+        self.m_tle_Basic_Filter.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.m_tle_Basic_Filter.setSelectionMode(QAbstractItemView.SingleSelection)
+        self.m_tle_Basic_Filter.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.m_tle_Basic_Filter.setColumnHidden(0, True)
+        self.m_tle_Basic_Filter.setMinimumHeight(
+            10 * self.m_tle_Basic_Filter.verticalHeader().defaultSectionSize() + 34
+        )
+        function_layout.addWidget(self.m_tle_Basic_Filter, 1)
+
+        # 六个功能按钮严格按用户操作顺序单列显示。
+        self.m_pbPreview = QtWidgets.QPushButton("查看处方", function_panel)
+        self.m_pbWithDiagSyndrome = QtWidgets.QPushButton("查看病例报告", function_panel)
+        self.m_pbWithoutDiagSyndrome = QtWidgets.QPushButton("", function_panel)
+        self.m_pbWithoutDiagSyndrome.hide()
+
+        action_title = QtWidgets.QLabel("就诊操作")
+        action_title.setObjectName("sectionTitle")
+        function_layout.addWidget(action_title)
+        action_row = QtWidgets.QVBoxLayout()
+        self.m_bt_Visit = QtWidgets.QPushButton("初诊", function_panel)
+        self.m_bt_Visit_2 = QtWidgets.QPushButton("复诊", function_panel)
+        self.m_bt_Save = QtWidgets.QPushButton("保存", function_panel)
+        self.m_bt_Del = QtWidgets.QPushButton("删除", function_panel)
+        self.m_bt_Save.setObjectName("primarySaveButton")
+        action_row.addWidget(self.m_bt_Visit)
+        action_row.addWidget(self.m_bt_Visit_2)
+        action_row.addWidget(self.m_bt_Save)
+        action_row.addWidget(self.m_pbPreview)
+        action_row.addWidget(self.m_pbWithDiagSyndrome)
+        action_row.addWidget(self.m_bt_Del)
+        self.m_bt_Del.setStyleSheet(
+            "QPushButton { background: #d32f2f; color: white; border-color: #a52222; }"
+            "QPushButton:hover { background: #b71c1c; }"
+        )
+        function_layout.addLayout(action_row)
+
+        function_layout.addStretch(1)
+        self.verticalLayout.addWidget(function_panel)
+        self.verticalLayout.setContentsMargins(8, 8, 8, 8)
+        self.verticalLayout.setAlignment(Qt.AlignTop)
+        self.function_panel = function_panel
+
+        self.groupBox_2.setTitle("病例报告")
+        report_panel = QtWidgets.QWidget(self.groupBox_2)
+        report_panel.setObjectName("caseReportPanel")
+        report_panel.setStyleSheet("""
+            QLabel { color: #263238; font-weight: bold; }
+            QTextEdit, QLineEdit { background: rgba(248,248,248,230); border: 1px solid #c4d2b5; border-radius: 4px; padding: 4px; font-weight: normal; color: #202020; }
+        """)
+        report_layout = QtWidgets.QFormLayout(report_panel)
+        report_layout.setLabelAlignment(Qt.AlignRight | Qt.AlignTop)
+        report_layout.setFieldGrowthPolicy(QtWidgets.QFormLayout.AllNonFixedFieldsGrow)
+
+        self.case_report_id = QtWidgets.QLabel("新建")
+        self.case_report_patient_id = QtWidgets.QLabel("-")
+        self.case_report_created_at = QtWidgets.QLabel("保存后生成")
+        # 编号、病例号统一由左侧患者资料显示，中间报告不重复显示。
+        self.case_report_id.hide()
+        self.case_report_patient_id.hide()
+
+        self.patient_created_at_label = QtWidgets.QLabel("创建时间：-")
+        self.patient_created_at_label.setStyleSheet(
+            "color: #263238; font-weight: normal; padding-right: 8px;"
+        )
+        self.horizontalLayout_17.addWidget(self.patient_created_at_label)
+
+        def text_field(name, height):
+            edit = QtWidgets.QTextEdit(report_panel)
+            edit.setObjectName(name)
+            edit.setMinimumHeight(height)
+            edit.setPlaceholderText("请输入" + name.replace("case_report_", "") + "…")
+            return edit
+
+        self.case_report_chief_complaint = text_field("case_report_主诉", 72)
+        self.case_report_present_history = text_field("case_report_现病史", 105)
+        self.case_report_past_history = text_field("case_report_既往史", 90)
+        self.case_report_allergy_history = text_field("case_report_过敏史", 72)
+        self.case_report_personal_history = text_field("case_report_个人史", 72)
+        self.case_report_diagnosis = text_field("case_report_诊断", 72)
+        self.case_report_prescription = text_field("case_report_医嘱处方", 120)
+        self.case_report_medication_method = text_field("case_report_服药方法", 72)
+        self.case_report_contraindication = text_field("case_report_禁忌", 72)
+        self.case_report_prescription.setReadOnly(False)
+        self.case_report_prescription.setPlaceholderText("可直接修改中药处方，药物之间用两个空格分隔…")
+        self.m_tbl_DrugUsage.itemChanged.connect(self._sync_case_report_prescription_from_table)
+        report_layout.addRow("主诉", self.case_report_chief_complaint)
+        report_layout.addRow("现病史", self.case_report_present_history)
+        report_layout.addRow("既往史", self.case_report_past_history)
+        report_layout.addRow("过敏史", self.case_report_allergy_history)
+        report_layout.addRow("个人史", self.case_report_personal_history)
+        report_layout.addRow("诊断", self.case_report_diagnosis)
+        report_layout.addRow("医嘱处方(单位克)", self.case_report_prescription)
+        report_layout.addRow("服药方法", self.case_report_medication_method)
+        report_layout.addRow("禁忌", self.case_report_contraindication)
+        report_layout.addRow("创建时间", self.case_report_created_at)
+
+        self.case_report_select_drug = QtWidgets.QPushButton("选择中药处方", report_panel)
+        self.case_report_select_drug.clicked.connect(self.handle_drugselect_click)
+
+        scroll = QtWidgets.QScrollArea(self.groupBox_2)
+        scroll.setWidgetResizable(True)
+        scroll.setAlignment(Qt.AlignTop)
+        scroll.setFrameShape(QtWidgets.QFrame.NoFrame)
+        scroll.setWidget(report_panel)
+        # 插到最前面，避免原界面已隐藏的控件在病例报告上方留下空白。
+        self.verticalLayout_5.insertWidget(0, scroll, 1)
+        self.verticalLayout_5.setContentsMargins(8, 4, 8, 4)
+        self.case_report_panel = scroll
+        # 处方选择属于医生输入项，放回左侧中药治疗区域上方。
+        self.case_report_select_drug.setParent(self.groupBox_1)
+        drug_index = self.verticalLayout_2.indexOf(self.m_tbl_DrugUsage)
+        self.verticalLayout_2.insertWidget(drug_index, self.case_report_select_drug)
+
+    def current_patient_id(self):
+        row = self.m_tle_Basic_Filter.currentRow()
+        if row >= 0:
+            item = self.m_tle_Basic_Filter.item(row, 0)
+            if item and item.text().strip():
+                self._active_patient_id = item.text().strip()
+        return self._active_patient_id
+
+    def current_case_number(self):
+        """界面统一展示病例号；数据库内部仍使用常规资料的主键。"""
+        item = self.m_tle_PatientInfo.item(8, 1)
+        return item.text().strip() if item and item.text().strip() else "-"
+
+    def _sync_case_report_prescription_from_table(self, item=None):
+        """中药治疗表格修改后，同步病例报告中的重要处方摘要。"""
+        if hasattr(self, "case_report_prescription") and not self.case_report_prescription.hasFocus():
+            self.case_report_prescription.setPlainText(self.prescription_text())
+
+    def normalized_prescription_text(self):
+        """统一重要处方格式：药物之间两个空格，不逐味换行。"""
+        return re.sub(r"[\r\n]+", "  ", self.case_report_prescription.toPlainText()).strip()
+
+    def prescription_text(self):
+        lines = []
+        for row in range(self.m_tbl_DrugUsage.rowCount()):
+            drug = self.m_tbl_DrugUsage.item(row, 1)
+            dose = self.m_tbl_DrugUsage.item(row, 2)
+            decoction = self.m_tbl_DrugUsage.item(row, 3)
+            if drug and drug.text().strip():
+                line = f"{drug.text().strip()} {dose.text().strip() if dose else ''}"
+                if decoction and decoction.text().strip():
+                    line += f"（{decoction.text().strip()}）"
+                lines.append(line.strip())
+        # 重要处方按中药处方摘要显示：药物之间使用两个空格，不逐味换行。
+        return "     ".join(lines)
+
+    def save_case_report(self):
+        """病例报告保存入口，统一调用患者资料完整保存接口。"""
+        self.handle_savepatientinfo_click()
+
+    def load_case_report(self, patient_id):
+        connection = None
+        try:
+            connection = pymysql.connect(**load_db_config())
+            with connection.cursor() as cursor:
+                cursor.execute("""
+                    SELECT 编号, 主诉, 现病史, 既往史, 过敏史, 个人史, 诊断,
+                           医嘱处方, 服药方法, 禁忌, 日期时间
+                    FROM 常规资料 WHERE 编号=%s
+                """, (patient_id,))
+                row = cursor.fetchone()
+            if row:
+                self.case_report_id.setText("与患者资料同步")
+                self.case_report_patient_id.setText(str(patient_id))
+                self.case_report_chief_complaint.setPlainText(row[1] or "")
+                self.case_report_present_history.setPlainText(row[2] or "")
+                self.case_report_past_history.setPlainText(row[3] or "")
+                self.case_report_allergy_history.setPlainText(row[4] or "")
+                self.case_report_personal_history.setPlainText(row[5] or "")
+                self.case_report_diagnosis.setPlainText(row[6] or "")
+                saved_prescription = row[7] or self.prescription_text()
+                saved_prescription = re.sub(r"[\r\n]+", "  ", str(saved_prescription)).strip()
+                self.case_report_prescription.setPlainText(saved_prescription)
+                self.case_report_medication_method.setPlainText(row[8] or "")
+                self.case_report_contraindication.setPlainText(row[9] or "")
+                self.case_report_created_at.setText(str(row[10] or "保存后生成"))
+                self.patient_created_at_label.setText(f"创建时间：{row[10] or '未保存'}")
+            else:
+                self.clear_case_report(patient_id)
+        except Exception as e:
+            QMessageBox.warning(self, "病例报告", f"加载病例报告失败：{e}")
+        finally:
+            if connection:
+                connection.close()
+
+    def clear_case_report(self, patient_id=None):
+        self.case_report_id.setText("新建")
+        self.case_report_patient_id.setText(str(patient_id or "-"))
+        self.case_report_created_at.setText("保存后生成")
+        self.patient_created_at_label.setText("创建时间：-")
+        for edit in (self.case_report_chief_complaint, self.case_report_present_history,
+                     self.case_report_past_history,
+                     self.case_report_allergy_history, self.case_report_personal_history,
+                     self.case_report_diagnosis, self.case_report_prescription,
+                     self.case_report_medication_method, self.case_report_contraindication):
+            edit.clear()
+        diagnosis_item = self.m_tle_PatientInfo.item(4, 1)
+        self.case_report_diagnosis.setPlainText(
+            diagnosis_item.text() if diagnosis_item and diagnosis_item.text() else ""
+        )
+
     def get_max_case_number(self):
         """查询数据库中当前最大的病历号（安全版本），取消默认初始值"""
         try:
@@ -250,11 +650,11 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
 
         # 根据groupBox_3的可见性应用不同比例
         if self.groupBox_3.isVisible():
-            # 36:270:create_decoction_combobox160:110 的比例
-            ratios = [36, 260, 140, 140]
+            # splitter 实际包含 Sidebar + 患者资料 + 病例报告 + 查询功能四项。
+            # 保留 Sidebar 的窄栏后，三块主内容按 1:2:1 分配。
+            ratios = [30, 250, 500, 250]
         else:
-            # 当groupBox_3隐藏时调整为 36:330:210:0
-            ratios = [36, 330, 210, 0]
+            ratios = [30, 400, 500, 0]
 
         total_ratio = sum(ratios)
         if total_ratio == 0:
@@ -417,6 +817,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
     def handle_firstvisit_click(self):
         # 清空所有字段前确保表格已初始化
         self.display_patient_info(None)
+        self.clear_case_report()
 
 
 
@@ -448,33 +849,11 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         self.current_image_path = None
 
     def handle_secondvisit_click(self):
-        # 设置编辑触发器（如果被其他代码覆盖）
-        for row in range(self.m_tle_PatientInfo.rowCount()):
-            item = self.m_tle_PatientInfo.item(row, 1)
-            if item is not None:
-                if row == 3 or row == 4:  # 清空
-                    item.setText("")
-
-        self.m_edt_SympConcl.clear()
-
-        self.m_edt_DiagConcl_2.setText("")
-        self.m_edt_Diagnote_4.setText("")
-        self.m_tbl_DrugUsage.clearContents()
-        for i in range(self.m_tbl_DrugUsage.rowCount()):
-            self.m_tbl_DrugUsage.removeRow(i)
-        self.m_edt_acup.setText("")
-        self.m_edtDosesNumber.setText("0")
-        self.m_edtAcubNumber.setText("0")
-        self.m_edtDosesPrice.setText("0")
-        self.m_edtAcubPrice.setText("0")
-        self.m_edtTotalPrice.setText("0")
-        item = self.m_tle_PatientInfo.item(8, 1)
-        if item is not None:
-            self.m_casenumber = item.text()
-
+        # 复诊沿用当前完整记录：患者资料、处方和病例报告全部自动带入新记录。
+        if not self.current_patient_id():
+            QMessageBox.warning(self, "复诊", "请先选择患者记录")
+            return
         self.insert_or_update_patient_record(True, False)
-        #self.label_PatientPhoto.clear()
-        #self.current_image_path = None
 
     ############################################
     def validate_insert_data(self):
@@ -584,7 +963,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         valid_data["drug_useage"] = drug_useage
 
         for i in range(4):  # 按照列读取
-            for j in range(20):
+            for j in range(40):
                 item = self.m_tbl_DrugUsage.item(j, i)
                 key_name = f"drugname{j + 1}"  # 动态生成键名
                 key_num = f"drugnum{j + 1}"  # 动态生成键名
@@ -707,9 +1086,18 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
                 current_date_str = current_data.toString("yyyy-MM-dd HH:mm:ss")
                 query = ""
                 current_row = self.m_tle_Basic_Filter.currentRow()
-                item = self.m_tle_Basic_Filter.item(current_row, 0)
-                if item != None:
-                    refreshdata_id = self.m_tle_Basic_Filter.item(current_row, 0).text()
+                item = self.m_tle_Basic_Filter.item(current_row, 0) if current_row >= 0 else None
+                if item is not None and item.text().strip():
+                    refreshdata_id = item.text().strip()
+                elif self._active_patient_id:
+                    refreshdata_id = self._active_patient_id
+
+                # 更新记录时保留第一次保存的创建时间；只有 INSERT 才使用当前时间。
+                if not newrecord and refreshdata_id:
+                    cursor.execute("SELECT 日期时间 FROM 常规资料 WHERE 编号=%s", (refreshdata_id,))
+                    original_date = cursor.fetchone()
+                    if original_date and original_date[0]:
+                        current_date_str = str(original_date[0])
 
                 if newrecord:
                     query = """INSERT INTO 常规资料 
@@ -730,17 +1118,9 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
                                %s, %s, %s, %s)"""
                 else:
                     # 修改1：添加有效性检查
-                    current_row = self.m_tle_Basic_Filter.currentRow()
-                    if current_row < 0:
-                        QMessageBox.warning(self, "操作错误", "请先选择要更新的记录")
+                    if not refreshdata_id:
+                        QMessageBox.warning(self, "操作错误", "请先选择患者记录")
                         return
-
-                    item = self.m_tle_Basic_Filter.item(current_row, 0)
-                    if not item or not item.text().strip():
-                        QMessageBox.warning(self, "数据错误", "选中记录编号无效")
-                        return
-
-                    refreshdata_id = item.text()  # 确保赋值
                     query = """UPDATE 常规资料 
                                                    SET 姓名=%s, 性别=%s, 年龄=%s, 病证=%s, 诊断=%s, 血压=%s, 住址=%s, 电话=%s, 病历号=%s, 身份证号=%s, 日期时间=%s,
                                                        姓名拼音=%s, 诊断拼音=%s, 剂数=%s, 针灸次数=%s, 用法=%s,
@@ -812,6 +1192,21 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
                         raise ValueError("更新操作需要有效的记录ID")
                     # 将current_row添加到values末尾，形成完整的参数元组
                     cursor.execute(query, values + (refreshdata_id,))
+                report_id = newrecord_id if newrecord else refreshdata_id
+                # 第 21~40 味写入统一保存事务，不新增独立保存接口。
+                extended_columns = []
+                extended_values = []
+                for prefix, key_prefix in (("药物", "drugname"), ("用量", "drugnum"), ("先煎后下", "drugdecoction")):
+                    for number in range(21, 41):
+                        extended_columns.append(f"`{prefix}{number}`=%s")
+                        extended_values.append(valid_data.get(f"{key_prefix}{number}", ""))
+                if report_id:
+                    cursor.execute(
+                        f"UPDATE `常规资料` SET {', '.join(extended_columns)} WHERE `编号`=%s",
+                        tuple(extended_values) + (report_id,)
+                    )
+                if report_id and not newpatient:
+                    self._save_case_report_fields_cursor(cursor, report_id)
                 connect.commit()
 
         except Exception as e:  # 扩大异常捕获范围
@@ -869,11 +1264,38 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
                 except ValueError:
                     continue  # 忽略无效的编号
 
+        return target_id
+
+    def _save_case_report_fields_cursor(self, cursor, patient_id):
+        """使用患者资料保存事务中的同一个游标写入病例报告字段。"""
+        prescription = self.normalized_prescription_text() or self.prescription_text()
+        self.case_report_prescription.setPlainText(prescription)
+        cursor.execute("""
+            UPDATE `常规资料` SET
+            `主诉`=%s, `现病史`=%s, `既往史`=%s, `过敏史`=%s,
+            `个人史`=%s, `诊断`=%s, `医嘱处方`=%s,
+            `服药方法`=%s, `禁忌`=%s
+            WHERE `编号`=%s
+        """, (
+            self.case_report_chief_complaint.toPlainText().strip(),
+            self.case_report_present_history.toPlainText().strip(),
+            self.case_report_past_history.toPlainText().strip(),
+            self.case_report_allergy_history.toPlainText().strip(),
+            self.case_report_personal_history.toPlainText().strip(),
+            self.case_report_diagnosis.toPlainText().strip(),
+            prescription,
+            self.case_report_medication_method.toPlainText().strip(),
+            self.case_report_contraindication.toPlainText().strip(),
+            patient_id,
+        ))
+
     def handle_savepatientinfo_click(self):
         # 原有的保存逻辑
-        self.insert_or_update_patient_record(False, False)
+        self._last_saved_patient_id = self.insert_or_update_patient_record(False, False)
 
         # 获取当前登录用户的医生名字
+        doctor_name = None
+        connection = None
         try:
             # 查询当前用户的医生名字
             db_config = load_db_config()
@@ -886,7 +1308,6 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
                     doctor_name = result[0]
                 else:
                     QMessageBox.warning(self, "警告", "当前用户未设置医生名字")
-                    return
         except Exception as e:
             QMessageBox.critical(self, "数据库错误", f"查询医生名字失败: {str(e)}")
             return
@@ -894,27 +1315,24 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
             if connection:
                 connection.close()
 
-        # 获取当前选中的患者ID
+        # 更新当前患者的主治医生字段。
+        if not doctor_name:
+            return
         current_row = self.m_tle_Basic_Filter.currentRow()
         if current_row < 0:
-            QMessageBox.warning(self, "操作错误", "请先选择患者记录")
             return
-
         patient_id_item = self.m_tle_Basic_Filter.item(current_row, 0)
         if not patient_id_item or not patient_id_item.text().strip():
-            QMessageBox.warning(self, "数据错误", "选中的记录编号无效")
             return
-
         patient_id = patient_id_item.text()
-
-        # 更新“常规资料”表中的“主治医生”字段
+        connection = None
         try:
-            db_config = load_db_config()
-            connection = pymysql.connect(**db_config)
+            connection = pymysql.connect(**load_db_config())
             with connection.cursor() as cursor:
-                sql = "UPDATE 常规资料 SET 主治医生 = %s WHERE 编号 = %s"
-                cursor.execute(sql, (doctor_name, patient_id))
-                connection.commit()
+                cursor.execute(
+                    "UPDATE 常规资料 SET 主治医生 = %s WHERE 编号 = %s",
+                    (doctor_name, patient_id))
+            connection.commit()
         except Exception as e:
             QMessageBox.critical(self, "数据库错误", f"更新主治医生信息失败: {str(e)}")
             if connection:
@@ -1236,11 +1654,13 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         """处理表格双击事件"""
         row = item.row()
         patient_id = self.m_tle_Basic_Filter.item(row, 0).text()
+        self._active_patient_id = patient_id
 
         data = self.m_databaseUtil.query_database_info(
             """SELECT 姓名,性别,年龄,病证,诊断, 血压,住址, 电话, 病历号, 身份证号 FROM 常规资料 WHERE 编号 = %s""", patient_id)
         self.display_patient_info(data)
         self.query_and_fill_data(patient_id)
+        self.load_case_report(patient_id)
 
     # 双击临床表现，将内容填充到m_edt_SympConcl控件中
     def on_row_ClinicalSymptom_double_click(self, item):
@@ -1278,6 +1698,11 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         ]
         self.m_tle_PatientInfo.setRowCount(len(fields))
         self.m_tle_PatientInfo.setColumnCount(2)
+        # 病例报告不再重复病证/诊断，但性别、年龄仍是患者基础资料输入项。
+        self.m_tle_PatientInfo.setRowHidden(1, False)
+        self.m_tle_PatientInfo.setRowHidden(2, False)
+        self.m_tle_PatientInfo.setRowHidden(3, True)
+        self.m_tle_PatientInfo.setRowHidden(4, True)
 
         # 初始化所有单元格
         for row in range(len(fields)):
@@ -1368,7 +1793,17 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
                 if not result:
                     return
 
-            row = result[0]  # 假设只处理查询结果的第一行
+                # 追加读取 21~40 味扩展字段，保持旧查询的索引兼容。
+                extension_columns = []
+                for prefix in ("药物", "用量", "先煎后下"):
+                    extension_columns.extend(f"`{prefix}{i}`" for i in range(21, 41))
+                cursor.execute(
+                    f"SELECT {', '.join(extension_columns)} FROM 常规资料 WHERE 编号 = %s",
+                    (number,)
+                )
+                extension_row = cursor.fetchone() or (None,) * 60
+
+            row = result[0] + tuple(extension_row)
 
             # 填充QLineEdit控件，使用正确的字段索引
             self.m_edt_SympConcl.setText(row[0] or "")  # 病证是第一个字段
@@ -1386,21 +1821,24 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
             self.m_edtAcubPrice.setText(str(row[7] or "0"))  # 针灸费用是第八个字段
             self.m_edtTotalPrice.setText(str(row[8] or "0"))  # 总费用是第九个字段
 
-            self.m_tbl_DrugUsage.setRowCount(20)
+            self.m_tbl_DrugUsage.setRowCount(40)
             self.m_tbl_DrugUsage.setColumnCount(4)
 
             nDrugRows = 0
-            for i in range(20):
-                drug = str(row[9 + i])  # 药物1~20（索引9到28）
-                if row[9 + i] != None and row[9 + i] != "":
+            for i in range(40):
+                drug_index = 9 + i if i < 20 else 71 + (i - 20)
+                if row[drug_index] is not None and row[drug_index] != "":
                     nDrugRows += 1
 
             self.m_tbl_DrugUsage.setRowCount(nDrugRows)
 
             for i in range(nDrugRows):
-                drug = str(row[9 + i])  # 药物1~20（索引9到28）
-                usage = row[29 + i]  # 用量1~20（索引29到48）
-                decoction = row[49 + i]
+                drug_index = 9 + i if i < 20 else 71 + (i - 20)
+                usage_index = 29 + i if i < 20 else 91 + (i - 20)
+                decoction_index = 49 + i if i < 20 else 111 + (i - 20)
+                drug = str(row[drug_index])
+                usage = row[usage_index]
+                decoction = row[decoction_index]
                 self.m_tbl_DrugUsage.setItem(i, 0, QtWidgets.QTableWidgetItem(number))
                 # 设置药物和用量列
                 self.m_tbl_DrugUsage.setItem(i, 1, QtWidgets.QTableWidgetItem(str(drug)))
@@ -1866,7 +2304,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
             self.m_tbl_DrugUsage.removeCellWidget(row, 3)  # 移除下拉框
 
     def handle_preview_click(self):
-        """处理预览按钮点击事件"""
+        """查看处方：使用精简版病例报告格式。"""
         current_row = self.m_tle_Basic_Filter.currentRow()
         if current_row < 0:
             QMessageBox.warning(self, "操作错误", "请先选择患者记录")
@@ -1881,8 +2319,8 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
 
         try:
             # 使用修改后的预览生成器
-            from preview import PreviewGenerator
-            generator = PreviewGenerator(patient_id, self.current_user_id)
+            from CaseReportGenerator import PrescriptionReportGenerator
+            generator = PrescriptionReportGenerator(patient_id, self.current_user_id)
             pdf_data = generator.generate().getvalue()
 
             # 显示预览
@@ -1891,6 +2329,24 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
             viewer.exec()
         except Exception as e:
             QMessageBox.critical(self, "错误", f"生成预览失败: {str(e)}")
+
+    def handle_case_report_preview(self):
+        """查看完整病例报告；包含所有病例字段和处方信息。"""
+        patient_id = self.current_patient_id()
+        if not patient_id:
+            QMessageBox.warning(self, "病例报告", "请先选择患者记录")
+            return
+        try:
+            # 先通过统一患者保存接口保存，保证阅览内容与编辑区一致。
+            self.insert_or_update_patient_record(False, False)
+            # 与查看处方明确分流：这里必须使用完整病例报告生成器，包含主诉和全部病史。
+            from CaseReportGenerator import CaseReportGenerator as FullCaseReportGenerator
+            generator = FullCaseReportGenerator(patient_id, self.current_user_id)
+            pdf_data = generator.generate().getvalue()
+            viewer = PdfViewerDialog(pdf_data, self)
+            viewer.exec()
+        except Exception as e:
+            QMessageBox.critical(self, "病例报告", f"生成病例报告失败：{e}")
 
     def close_decoction_editor(self, item):
         """安全关闭煎法单元格编辑器"""
