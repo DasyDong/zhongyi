@@ -5,7 +5,7 @@ except ImportError:
     win32print = None
 from PySide6.QtWidgets import (
     QLabel, QVBoxLayout, QToolBar,
-    QScrollArea
+    QScrollArea, QWidget
 )
 from PySide6.QtGui import QImage, QPixmap, QKeySequence, QAction
 from PySide6.QtPrintSupport import QPrinter, QPageSetupDialog
@@ -68,9 +68,12 @@ class PdfViewerDialog(QDialog):
         self.scroll_area.setFrameShape(QScrollArea.NoFrame)
         self.scroll_area.setWidgetResizable(True)
 
-        self.label = QLabel()
-        self.label.setAlignment(Qt.AlignCenter)
-        self.scroll_area.setWidget(self.label)
+        # 使用滚动容器纵向放置所有页面，避免多页PDF只显示第一页。
+        self.page_container = QWidget()
+        self.page_layout = QVBoxLayout(self.page_container)
+        self.page_layout.setContentsMargins(10, 10, 10, 10)
+        self.page_layout.setSpacing(16)
+        self.scroll_area.setWidget(self.page_container)
 
         main_layout.addWidget(self.scroll_area)
         self.set_zoom(self.zoom_factor * 0.2)
@@ -174,10 +177,10 @@ class PdfViewerDialog(QDialog):
         target_width = view_size.width() - 20
         target_height = view_size.height() - 20
 
-        # 获取当前页面
-        current_pixmap = self.pages[self.current_page]
-        orig_width = current_pixmap.width()
-        orig_height = current_pixmap.height()
+        # 以第一页的尺寸计算统一缩放比例，保证所有页面等宽显示。
+        first_pixmap = self.pages[0]
+        orig_width = first_pixmap.width()
+        orig_height = first_pixmap.height()
 
         # 计算缩放比例
         if self.auto_fit:
@@ -186,16 +189,26 @@ class PdfViewerDialog(QDialog):
             self.zoom_factor = min(width_ratio, height_ratio)
             self.update_zoom_display()
 
-        # 应用缩放
-        scaled_pixmap = current_pixmap.scaled(
-            orig_width * self.zoom_factor,
-            orig_height * self.zoom_factor,
-            Qt.KeepAspectRatio,
-            Qt.SmoothTransformation
-        )
+        # 清理旧页面控件，再纵向显示PDF的全部页面。
+        while self.page_layout.count():
+            item = self.page_layout.takeAt(0)
+            widget = item.widget()
+            if widget is not None:
+                widget.deleteLater()
 
-        self.label.setPixmap(scaled_pixmap)
-        self.label.resize(scaled_pixmap.size())
+        for page_pixmap in self.pages:
+            scaled_pixmap = page_pixmap.scaled(
+                page_pixmap.width() * self.zoom_factor,
+                page_pixmap.height() * self.zoom_factor,
+                Qt.KeepAspectRatio,
+                Qt.SmoothTransformation
+            )
+            page_label = QLabel(self.page_container)
+            page_label.setAlignment(Qt.AlignCenter)
+            page_label.setPixmap(scaled_pixmap)
+            page_label.setFixedSize(scaled_pixmap.size())
+            self.page_layout.addWidget(page_label, 0, Qt.AlignHCenter)
+        self.page_container.adjustSize()
 
     # 窗口事件处理
     def resizeEvent(self, event):

@@ -56,6 +56,10 @@ class MyDrugFormulasWindow(QDialog, Ui_DialogDrugSelec):
         # 设置表格标题
         self.m_tle_FormulaDrugCombSet.setHorizontalHeaderLabels(['编号', '药物', '剂量'])
         self.m_tle_FormulaSelDruglistSet.setHorizontalHeaderLabels(['编号', '药名', '价格'])
+        # 处方最多支持40味药；窗口可视区域不足时通过滚动条查看后续行
+        self.m_tle_FormulaDrugCombSet.setRowCount(40)
+        self.m_tle_FormulaDrugCombSet.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        self.m_tle_FormulaDrugCombSet.verticalHeader().setDefaultSectionSize(26)
 
         # 设置搜索框提示
         self.m_edt_FormulaSearch.setPlaceholderText("请输入拼音首字母")
@@ -69,9 +73,26 @@ class MyDrugFormulasWindow(QDialog, Ui_DialogDrugSelec):
         """初始化数据库连接"""
         try:
             self.conn = pymysql.connect(**load_db_config())
+            with self.conn.cursor() as cursor:
+                for table in ("经验选方", "辨病选方", "方剂选方"):
+                    cursor.execute(f"SHOW COLUMNS FROM `{table}`")
+                    existing = {row[0] for row in cursor.fetchall()}
+                    for prefix in ("药物", "剂量"):
+                        for number in range(21, 41):
+                            column = f"{prefix}{number}"
+                            if column not in existing:
+                                cursor.execute(f"ALTER TABLE `{table}` ADD COLUMN `{column}` TEXT NULL")
+                self.conn.commit()
         except Exception as e:
             QMessageBox.critical(self, "错误", f"数据库连接失败：{str(e)}")
             self.close()
+
+    @staticmethod
+    def formula_drug_select_sql(table_name):
+        columns = [f"药物{i}" for i in range(1, 41)]
+        columns += [f"剂量{i}" for i in range(1, 41)]
+        columns.append("说明")
+        return f"SELECT {', '.join(columns)} FROM `{table_name}` WHERE 编号 = %s"
 
     def load_initial_data(self):
         """加载初始数据到表格"""
@@ -247,18 +268,14 @@ class MyDrugFormulasWindow(QDialog, Ui_DialogDrugSelec):
         self.current_formula_id = current_table.item(row, 0).text()
 
         # 查询药物组合数据
-        sql = f"""SELECT 药物1,药物2,药物3,药物4,药物5,药物6,药物7,药物8,药物9,药物10,
-                药物11,药物12,药物13,药物14,药物15,药物16,药物17,药物18,药物19,药物20,
-                剂量1,剂量2,剂量3,剂量4,剂量5,剂量6,剂量7,剂量8,剂量9,剂量10,
-                剂量11,剂量12,剂量13,剂量14,剂量15,剂量16,剂量17,剂量18,剂量19,剂量20,说明 
-                FROM {self.current_table_name} WHERE 编号 = %s"""
+        sql = self.formula_drug_select_sql(self.current_table_name)
 
         data = self.m_databaseUtil.query_database_info(sql, self.current_formula_id)
         if data:
             self.display_drug_combination(data)
             # 保存原始药物组合和说明数据
             self.original_drug_comb = data
-            self.original_description = data[40] if len(data) > 40 else ""
+            self.original_description = data[80] if len(data) > 80 else ""
         else:
             self.original_drug_comb = None
             self.original_description = ""
@@ -269,31 +286,31 @@ class MyDrugFormulasWindow(QDialog, Ui_DialogDrugSelec):
 
         # 处理说明字段
         description = ""
-        if data and len(data) > 40:
-            desc_value = data[40]
+        if data and len(data) > 80:
+            desc_value = data[80]
             if desc_value is not None:
                 # 将字段内容转换为字符串，并移除其中的空字符
                 description = str(desc_value).replace('\x00', '')
         self.m_edt_DrugDiscripSet.setPlainText(description)
 
-        # 固定设置为20行
-        self.m_tle_FormulaDrugCombSet.setRowCount(20)
+        # 固定设置为40行，支持最多40味药
+        self.m_tle_FormulaDrugCombSet.setRowCount(40)
 
         # 分离药物和剂量数据（严格对应数据库字段）
         drugs = []
         doses = []
         if data:
-            # 前20个是药物字段（药物1-药物20）
-            drugs = [str(data[i]) if i < 20 and data[i] is not None else "" for i in range(20)]
-            # 接下来20个是剂量字段（剂量1-剂量20）
-            doses = [str(data[i]) if 20 <= i < 40 and data[i] is not None else "" for i in range(20, 40)]
+            # 前40个是药物字段（药物1-药物40）
+            drugs = [str(data[i]) if i < 40 and data[i] is not None else "" for i in range(40)]
+            # 接下来40个是剂量字段（剂量1-剂量40）
+            doses = [str(data[i]) if 40 <= i < 80 and data[i] is not None else "" for i in range(40, 80)]
         else:
-            drugs = [""] * 20
-            doses = [""] * 20
+            drugs = [""] * 40
+            doses = [""] * 40
 
         # 按原始顺序填充表格
-        for row in range(20):
-            # 编号列（0-19对应药物1-20）
+        for row in range(40):
+            # 编号列（0-39对应药物1-40）
             self.m_tle_FormulaDrugCombSet.setItem(row, 0, QTableWidgetItem(str(row)))
 
             # 药物列（直接对应数据库字段顺序）
@@ -307,7 +324,7 @@ class MyDrugFormulasWindow(QDialog, Ui_DialogDrugSelec):
             self.m_tle_FormulaDrugCombSet.setItem(row, 2, dose_item)
 
         # 确保所有单元格都有Item对象
-        for row in range(20):
+        for row in range(40):
             for col in range(3):
                 if self.m_tle_FormulaDrugCombSet.item(row, col) is None:
                     self.m_tle_FormulaDrugCombSet.setItem(row, col, QTableWidgetItem(""))
@@ -330,8 +347,8 @@ class MyDrugFormulasWindow(QDialog, Ui_DialogDrugSelec):
         self.m_edt_DrugDiscripSet.clear()
 
         # 初始化药物组合表
-        self.m_tle_FormulaDrugCombSet.setRowCount(20)
-        for row in range(20):
+        self.m_tle_FormulaDrugCombSet.setRowCount(40)
+        for row in range(40):
             self.m_tle_FormulaDrugCombSet.setItem(row, 0, QTableWidgetItem(str(row)))
             self.m_tle_FormulaDrugCombSet.setItem(row, 1, QTableWidgetItem(""))
             self.m_tle_FormulaDrugCombSet.setItem(row, 2, QTableWidgetItem(""))
@@ -492,7 +509,7 @@ class MyDrugFormulasWindow(QDialog, Ui_DialogDrugSelec):
                 description_modified = current_description != self.original_description
 
                 # 收集当前药物和剂量数据
-                for row_idx in range(20):
+                for row_idx in range(40):
                     drug_item = self.m_tle_FormulaDrugCombSet.item(row_idx, 1)
                     dose_item = self.m_tle_FormulaDrugCombSet.item(row_idx, 2)
 
@@ -503,10 +520,10 @@ class MyDrugFormulasWindow(QDialog, Ui_DialogDrugSelec):
                     original_drug = ""
                     original_dose = ""
                     if self.original_drug_comb is not None:
-                        if row_idx < 20:
-                            original_drug = self.original_drug_comb[row_idx] if self.original_drug_comb[row_idx] is not None else ""
-                        if (row_idx + 20) < 40:
-                            original_dose = str(self.original_drug_comb[row_idx + 20]) if self.original_drug_comb[row_idx + 20] is not None else ""
+                        if row_idx < 40 and row_idx < len(self.original_drug_comb):
+                            original_drug = str(self.original_drug_comb[row_idx]) if self.original_drug_comb[row_idx] is not None else ""
+                        if (row_idx + 40) < 80 and (row_idx + 40) < len(self.original_drug_comb):
+                            original_dose = str(self.original_drug_comb[row_idx + 40]) if self.original_drug_comb[row_idx + 40] is not None else ""
 
                     # 比较是否修改
                     if current_drug != original_drug:
@@ -524,29 +541,20 @@ class MyDrugFormulasWindow(QDialog, Ui_DialogDrugSelec):
 
                 # 如果有任何修改，则执行更新
                 if drugs_modified or doses_modified or description_modified:
-                    sql = f"""UPDATE {current_table_name} SET 
-                            药物1=%s,药物2=%s,药物3=%s,药物4=%s,药物5=%s,
-                            药物6=%s,药物7=%s,药物8=%s,药物9=%s,药物10=%s,
-                            药物11=%s,药物12=%s,药物13=%s,药物14=%s,药物15=%s,
-                            药物16=%s,药物17=%s,药物18=%s,药物19=%s,药物20=%s,
-                            剂量1=%s,剂量2=%s,剂量3=%s,剂量4=%s,剂量5=%s,
-                            剂量6=%s,剂量7=%s,剂量8=%s,剂量9=%s,剂量10=%s,
-                            剂量11=%s,剂量12=%s,剂量13=%s,剂量14=%s,剂量15=%s,
-                            剂量16=%s,剂量17=%s,剂量18=%s,剂量19=%s,剂量20=%s,
-                            说明=%s WHERE 编号=%s"""
+                    drug_assignments = ",".join(f"药物{i}=%s" for i in range(1, 41))
+                    dose_assignments = ",".join(f"剂量{i}=%s" for i in range(1, 41))
+                    sql = f"""UPDATE `{current_table_name}` SET
+                            {drug_assignments},{dose_assignments},说明=%s
+                            WHERE 编号=%s"""
 
                     params = drugs + doses + [current_description, current_formula_id]
                     cursor.execute(sql, params)
                     # 更新原始数据
-                    sql_select = f"""SELECT 药物1,药物2,药物3,药物4,药物5,药物6,药物7,药物8,药物9,药物10,
-                                    药物11,药物12,药物13,药物14,药物15,药物16,药物17,药物18,药物19,药物20,
-                                    剂量1,剂量2,剂量3,剂量4,剂量5,剂量6,剂量7,剂量8,剂量9,剂量10,
-                                    剂量11,剂量12,剂量13,剂量14,剂量15,剂量16,剂量17,剂量18,剂量19,剂量20,说明 
-                                    FROM {current_table_name} WHERE 编号=%s"""
+                    sql_select = self.formula_drug_select_sql(current_table_name)
                     data = self.m_databaseUtil.query_database_info(sql_select, current_formula_id)
                     if data:
                         self.original_drug_comb = data
-                        self.original_description = data[40] if len(data) > 40 else ""
+                        self.original_description = data[80] if len(data) > 80 else ""
                     else:
                         self.original_drug_comb = None
                         self.original_description = ""

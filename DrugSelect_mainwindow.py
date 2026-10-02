@@ -1,7 +1,7 @@
 from functools import partial
 from PySide6.QtCore import Qt, QStringListModel, QTimer
 from PySide6 import QtWidgets
-from PySide6.QtWidgets import QTableWidget, QDialog, QTableWidgetItem, QCompleter, QLineEdit
+from PySide6.QtWidgets import QTableWidget, QDialog, QTableWidgetItem, QCompleter, QLineEdit, QStyledItemDelegate
 from PySide6.QtWidgets import QAbstractItemView
 from ui_DrugSelec_window import Ui_DialogDrugSelec  # 导入生成的对话框界面类
 from DatabaseUtil import myDatabaseUtil
@@ -10,6 +10,24 @@ import warnings
 # 过滤特定 SIP 警告
 
 warnings.filterwarnings("ignore", category=DeprecationWarning, message="sipPyTypeDict.*")
+
+
+class FormulaDrugCompleterDelegate(QStyledItemDelegate):
+    """处方加减药物列专用编辑器。"""
+
+    def __init__(self, model, parent=None):
+        super().__init__(parent)
+        self.model = model
+
+    def createEditor(self, parent, option, index):
+        editor = QLineEdit(parent)
+        completer = QCompleter(self.model, editor)
+        completer.setCaseSensitivity(Qt.CaseInsensitive)
+        completer.setFilterMode(Qt.MatchContains)
+        completer.setCompletionMode(QCompleter.PopupCompletion)
+        editor.setCompleter(completer)
+        completer.activated.connect(editor.setText)
+        return editor
 
 class MyDrugSelectWindow(QDialog, Ui_DialogDrugSelec):
 
@@ -42,6 +60,9 @@ class MyDrugSelectWindow(QDialog, Ui_DialogDrugSelec):
         )
         self.m_tle_FormulaDrugComb_2.cellClicked.connect(self.start_formula_drug_edit)
         self._drug_name_model = QStringListModel(self.load_drug_names(), self)
+        self.m_tle_FormulaDrugComb_2.setItemDelegateForColumn(
+            1, FormulaDrugCompleterDelegate(self._drug_name_model, self.m_tle_FormulaDrugComb_2)
+        )
 
         self.m_edt_FormulaSearch.textChanged.connect(
             partial(self.m_databaseUtil.load_tableWidget_data, self.m_tle_ExpdFormula, columnLabels=['编号', '方名'],

@@ -6,10 +6,29 @@ import weakref
 from PySide6 import QtWidgets
 from PySide6.QtWidgets import QHeaderView, QCalendarWidget, QDialog, QApplication, QTableWidget, \
     QTableWidgetItem, QVBoxLayout, QAbstractItemView, QMessageBox, QMainWindow, QFileDialog, \
-    QCompleter, QLineEdit
+    QCompleter, QLineEdit, QStyledItemDelegate
 from PySide6.QtCore import QDate, QEvent, QPoint, QDateTime, Qt, QTimer, QStringListModel
 from PySide6.QtGui import QColor, QDoubleValidator, QScreen, QPixmap, QIcon
 from pymysql import Error
+
+
+class DrugNameCompleterDelegate(QStyledItemDelegate):
+    """中药名称列专用编辑器，确保每次编辑都绑定完整清单补全。"""
+
+    def __init__(self, model, parent=None):
+        super().__init__(parent)
+        self.model = model
+
+    def createEditor(self, parent, option, index):
+        editor = QLineEdit(parent)
+        completer = QCompleter(self.model, editor)
+        completer.setCaseSensitivity(Qt.CaseInsensitive)
+        completer.setFilterMode(Qt.MatchContains)
+        completer.setCompletionMode(QCompleter.PopupCompletion)
+        editor.setCompleter(completer)
+        # 选择补全项后直接写入编辑框，回车/失焦再由表格提交。
+        completer.activated.connect(editor.setText)
+        return editor
 
 from ui_main_window import Ui_MainWindow  # 导入生成的界面类
 import warnings
@@ -158,6 +177,9 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         # 点击药物列即可直接输入，输入过程中弹出中药清单补全。
         self.m_tbl_DrugUsage.cellClicked.connect(self.start_drug_name_edit)
         self._drug_name_model = QStringListModel(self.load_drug_names(), self)
+        self.m_tbl_DrugUsage.setItemDelegateForColumn(
+            1, DrugNameCompleterDelegate(self._drug_name_model, self.m_tbl_DrugUsage)
+        )
 
         # 绑定菜单项点击事件
         #self.on_action_jingyanxuanfang.triggered.connect(self.on_action_jingyanxuanfang_key)
@@ -454,7 +476,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         self.m_tle_Basic_Filter.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.m_tle_Basic_Filter.setColumnHidden(0, True)
         self.m_tle_Basic_Filter.setMinimumHeight(
-            10 * self.m_tle_Basic_Filter.verticalHeader().defaultSectionSize() + 34
+            7 * self.m_tle_Basic_Filter.verticalHeader().defaultSectionSize() + 34
         )
         function_layout.addWidget(self.m_tle_Basic_Filter, 1)
 
@@ -532,7 +554,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         self.case_report_special_note = text_field("case_report_备注", 72)
         self.case_report_special_note.setPlainText("无")
         self.case_report_prescription.setReadOnly(False)
-        self.case_report_prescription.setPlaceholderText("可直接修改中药处方，药物之间用两个空格分隔…")
+        self.case_report_prescription.setPlaceholderText("可直接修改中药处方，药物之间至少用十个空格分隔…")
         self.m_tbl_DrugUsage.itemChanged.connect(self._sync_case_report_prescription_from_table)
         report_layout.addRow("主诉", self.case_report_chief_complaint)
         report_layout.addRow("现病史", self.case_report_present_history)
@@ -640,8 +662,8 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
             self.case_report_prescription.setPlainText(self.prescription_text())
 
     def normalized_prescription_text(self):
-        """统一重要处方格式：药物之间两个空格，不逐味换行。"""
-        return re.sub(r"[\r\n]+", "  ", self.case_report_prescription.toPlainText()).strip()
+        """统一重要处方格式：药物之间至少十个空格，不逐味换行。"""
+        return re.sub(r"[\r\n]+", "          ", self.case_report_prescription.toPlainText()).strip()
 
     def prescription_text(self):
         lines = []
@@ -654,8 +676,8 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
                 if decoction and decoction.text().strip():
                     line += f"（{decoction.text().strip()}）"
                 lines.append(line.strip())
-        # 重要处方按中药处方摘要显示：药物之间使用两个空格，不逐味换行。
-        return "     ".join(lines)
+        # 重要处方按中药处方摘要显示：药物之间至少十个空格，不逐味换行。
+        return "          ".join(lines)
 
     def save_case_report(self):
         """病例报告保存入口，统一调用患者资料完整保存接口。"""
@@ -682,7 +704,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
                 self.case_report_personal_history.setPlainText(row[5] or "")
                 self.case_report_diagnosis.setPlainText(row[6] or "")
                 saved_prescription = row[7] or self.prescription_text()
-                saved_prescription = re.sub(r"[\r\n]+", "  ", str(saved_prescription)).strip()
+                saved_prescription = re.sub(r"[\r\n]+", "          ", str(saved_prescription)).strip()
                 self.case_report_prescription.setPlainText(saved_prescription)
                 self.case_report_medication_method.setPlainText(row[8] or "")
                 self.case_report_contraindication.setPlainText(row[9] or "")
@@ -1016,12 +1038,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         except ValueError:
             errors.append(("病历号必须为有效整数", 8))
 
-        # 身份证号校验
-        id_card_item = self.m_tle_PatientInfo.item(9, 1)
-        id_card = id_card_item.text().strip() if id_card_item else ""
-        valid_data["id_card"] = id_card
-
-        # 身份证号校验（允许为空）
+        # 身份证号（允许为空，按文本保存，避免丢失开头的0）
         id_card_item = self.m_tle_PatientInfo.item(9, 1)
         valid_data["id_card"] = id_card_item.text().strip() if id_card_item else ""
 
@@ -1288,6 +1305,13 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
                     # 将current_row添加到values末尾，形成完整的参数元组
                     cursor.execute(query, values + (refreshdata_id,))
                 report_id = newrecord_id if newrecord else refreshdata_id
+                # 身份证号在统一保存事务中显式回写一次，确保新增和更新都落到常规资料表。
+                # 该操作仍属于当前保存接口和当前事务，不新增独立保存接口。
+                if report_id:
+                    cursor.execute(
+                        "UPDATE `常规资料` SET `身份证号`=%s WHERE `编号`=%s",
+                        (valid_data.get("id_card", ""), report_id),
+                    )
                 # 第 21~40 味写入统一保存事务，不新增独立保存接口。
                 extended_columns = []
                 extended_values = []
