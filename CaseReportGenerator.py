@@ -346,15 +346,11 @@ class CaseReportGenerator(PreviewGenerator):
         return "          ".join(medicines)
 
     def _draw_footer(self, c):
-        """病例报告页脚：审核、核对、调配留空，医师取主治医生。"""
+        """病例报告页脚只保留左侧主治医师。"""
         current_y = self.margin + self.footer_height
         c.setFont(self.font_name, 12)
         doctor = self.data.get("主治医生") or self.data.get("医生", "")
-        signoff = (
-            f"审核：____________    核对：____________    "
-            f"调配：____________    医师：{doctor}"
-        )
-        c.drawString(2 * cm, current_y, signoff)
+        c.drawString(2 * cm, current_y, f"主治医师：{doctor}")
         current_y -= 0.9 * cm
         contact = []
         if self.data.get("诊所地址"):

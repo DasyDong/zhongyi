@@ -8,7 +8,7 @@ from PySide6.QtWidgets import QHeaderView, QCalendarWidget, QDialog, QApplicatio
     QTableWidgetItem, QVBoxLayout, QAbstractItemView, QMessageBox, QMainWindow, QFileDialog, \
     QCompleter, QLineEdit, QStyledItemDelegate
 from PySide6.QtCore import QDate, QEvent, QPoint, QDateTime, Qt, QTimer, QStringListModel
-from PySide6.QtGui import QColor, QDoubleValidator, QScreen, QPixmap, QIcon
+from PySide6.QtGui import QColor, QDoubleValidator, QScreen, QPixmap, QIcon, QFont
 from pymysql import Error
 
 
@@ -53,7 +53,7 @@ from ClinicalSymptoms_windows import ClinicalSymptomsWindow
 from ClinicalAnylasis_windows import ClinicalAnylasisWindow
 from ClinicalDiag_windows import ClinicalDiagWindow
 from AcupSetting_window import AcupSettingWindow
-from PatientList_window import PatientListWindow
+from PatientList_window import PatientListWindow, PatientViewerWindow
 from MedicalRecord_window import MedicalRecordWindow
 from About import AboutDialog
 warnings.filterwarnings("ignore", category=DeprecationWarning, message="sipPyTypeDict.*")
@@ -201,6 +201,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         self.m_bt_menu_Diagnosis.clicked.connect(self.show_clinical_diag)
         self.m_bt_menu_Acup.clicked.connect(self.show_acup_setting)
         self.m_bt_menu_Patients.clicked.connect(self.show_patient_list)
+        self.m_bt_menu_Patients.setText("查看患者")
         self.m_bt_menu_MedicalRec.clicked.connect(self.open_medical_record_window)
         self.m_bt_About.clicked.connect(self.show_about)
         self.m_pbPreview.clicked.connect(self.handle_preview_click)
@@ -549,6 +550,10 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         self.case_report_personal_history = text_field("case_report_个人史", 72)
         self.case_report_diagnosis = text_field("case_report_诊断", 72)
         self.case_report_prescription = text_field("case_report_医嘱处方", 120)
+        # 处方摘要使用等宽字体，配合每行5味药的固定列宽显示对齐。
+        prescription_font = QFont("Menlo")
+        prescription_font.setPointSize(11)
+        self.case_report_prescription.setFont(prescription_font)
         self.case_report_medication_method = text_field("case_report_服药方法", 72)
         self.case_report_contraindication = text_field("case_report_禁忌", 72)
         self.case_report_special_note = text_field("case_report_备注", 72)
@@ -666,7 +671,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         return re.sub(r"[\r\n]+", "          ", self.case_report_prescription.toPlainText()).strip()
 
     def prescription_text(self):
-        lines = []
+        items = []
         for row in range(self.m_tbl_DrugUsage.rowCount()):
             drug = self.m_tbl_DrugUsage.item(row, 1)
             dose = self.m_tbl_DrugUsage.item(row, 2)
@@ -675,9 +680,27 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
                 line = f"{drug.text().strip()} {dose.text().strip() if dose else ''}"
                 if decoction and decoction.text().strip():
                     line += f"（{decoction.text().strip()}）"
-                lines.append(line.strip())
-        # 重要处方按中药处方摘要显示：药物之间至少十个空格，不逐味换行。
-        return "          ".join(lines)
+                items.append(line.strip())
+
+        # 医嘱处方按每行5味药排版，并使用固定显示宽度让各行列位置对齐。
+        def display_width(text):
+            return sum(2 if ord(char) > 0x7F else 1 for char in text)
+
+        if not items:
+            return ""
+        column_width = max(12, max(display_width(item) for item in items) + 2)
+        lines = []
+        for start in range(0, len(items), 5):
+            row_items = items[start:start + 5]
+            columns = []
+            for index, item in enumerate(row_items):
+                if index < len(row_items) - 1:
+                    padding = max(2, column_width - display_width(item))
+                    columns.append(item + " " * padding)
+                else:
+                    columns.append(item)
+            lines.append("".join(columns).rstrip())
+        return "\n".join(lines)
 
     def save_case_report(self):
         """病例报告保存入口，统一调用患者资料完整保存接口。"""
@@ -835,7 +858,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
 
 
     def show_patient_list(self):
-        patient_list_dialog = PatientListWindow(self)
+        patient_list_dialog = PatientViewerWindow(self)
         # 自定义窗口大小
         width = self.width() * 0.7
         height = width * 9 / 14
