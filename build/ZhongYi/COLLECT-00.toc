@@ -1,0 +1,1408 @@
+([('81d243bd2c585b0f4821__mypyc.cp310-win_amd64.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\81d243bd2c585b0f4821__mypyc.cp310-win_amd64.pyd',
+   'EXTENSION'),
+  ('Crypto\\Cipher\\_ARC4.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\Crypto\\Cipher\\_ARC4.pyd',
+   'BINARY'),
+  ('Crypto\\Cipher\\_Salsa20.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\Crypto\\Cipher\\_Salsa20.pyd',
+   'BINARY'),
+  ('Crypto\\Cipher\\_chacha20.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\Crypto\\Cipher\\_chacha20.pyd',
+   'BINARY'),
+  ('Crypto\\Cipher\\_pkcs1_decode.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\Crypto\\Cipher\\_pkcs1_decode.pyd',
+   'BINARY'),
+  ('Crypto\\Cipher\\_raw_aes.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\Crypto\\Cipher\\_raw_aes.pyd',
+   'BINARY'),
+  ('Crypto\\Cipher\\_raw_aesni.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\Crypto\\Cipher\\_raw_aesni.pyd',
+   'BINARY'),
+  ('Crypto\\Cipher\\_raw_arc2.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\Crypto\\Cipher\\_raw_arc2.pyd',
+   'BINARY'),
+  ('Crypto\\Cipher\\_raw_blowfish.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\Crypto\\Cipher\\_raw_blowfish.pyd',
+   'BINARY'),
+  ('Crypto\\Cipher\\_raw_cast.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\Crypto\\Cipher\\_raw_cast.pyd',
+   'BINARY'),
+  ('Crypto\\Cipher\\_raw_cbc.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\Crypto\\Cipher\\_raw_cbc.pyd',
+   'BINARY'),
+  ('Crypto\\Cipher\\_raw_cfb.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\Crypto\\Cipher\\_raw_cfb.pyd',
+   'BINARY'),
+  ('Crypto\\Cipher\\_raw_ctr.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\Crypto\\Cipher\\_raw_ctr.pyd',
+   'BINARY'),
+  ('Crypto\\Cipher\\_raw_des.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\Crypto\\Cipher\\_raw_des.pyd',
+   'BINARY'),
+  ('Crypto\\Cipher\\_raw_des3.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\Crypto\\Cipher\\_raw_des3.pyd',
+   'BINARY'),
+  ('Crypto\\Cipher\\_raw_ecb.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\Crypto\\Cipher\\_raw_ecb.pyd',
+   'BINARY'),
+  ('Crypto\\Cipher\\_raw_eksblowfish.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\Crypto\\Cipher\\_raw_eksblowfish.pyd',
+   'BINARY'),
+  ('Crypto\\Cipher\\_raw_ocb.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\Crypto\\Cipher\\_raw_ocb.pyd',
+   'BINARY'),
+  ('Crypto\\Cipher\\_raw_ofb.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\Crypto\\Cipher\\_raw_ofb.pyd',
+   'BINARY'),
+  ('Crypto\\Hash\\_BLAKE2b.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\Crypto\\Hash\\_BLAKE2b.pyd',
+   'BINARY'),
+  ('Crypto\\Hash\\_BLAKE2s.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\Crypto\\Hash\\_BLAKE2s.pyd',
+   'BINARY'),
+  ('Crypto\\Hash\\_MD2.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\Crypto\\Hash\\_MD2.pyd',
+   'BINARY'),
+  ('Crypto\\Hash\\_MD4.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\Crypto\\Hash\\_MD4.pyd',
+   'BINARY'),
+  ('Crypto\\Hash\\_MD5.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\Crypto\\Hash\\_MD5.pyd',
+   'BINARY'),
+  ('Crypto\\Hash\\_RIPEMD160.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\Crypto\\Hash\\_RIPEMD160.pyd',
+   'BINARY'),
+  ('Crypto\\Hash\\_SHA1.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\Crypto\\Hash\\_SHA1.pyd',
+   'BINARY'),
+  ('Crypto\\Hash\\_SHA224.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\Crypto\\Hash\\_SHA224.pyd',
+   'BINARY'),
+  ('Crypto\\Hash\\_SHA256.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\Crypto\\Hash\\_SHA256.pyd',
+   'BINARY'),
+  ('Crypto\\Hash\\_SHA384.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\Crypto\\Hash\\_SHA384.pyd',
+   'BINARY'),
+  ('Crypto\\Hash\\_SHA512.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\Crypto\\Hash\\_SHA512.pyd',
+   'BINARY'),
+  ('Crypto\\Hash\\_ghash_clmul.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\Crypto\\Hash\\_ghash_clmul.pyd',
+   'BINARY'),
+  ('Crypto\\Hash\\_ghash_portable.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\Crypto\\Hash\\_ghash_portable.pyd',
+   'BINARY'),
+  ('Crypto\\Hash\\_keccak.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\Crypto\\Hash\\_keccak.pyd',
+   'BINARY'),
+  ('Crypto\\Hash\\_poly1305.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\Crypto\\Hash\\_poly1305.pyd',
+   'BINARY'),
+  ('Crypto\\Math\\_modexp.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\Crypto\\Math\\_modexp.pyd',
+   'BINARY'),
+  ('Crypto\\Protocol\\_scrypt.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\Crypto\\Protocol\\_scrypt.pyd',
+   'BINARY'),
+  ('Crypto\\PublicKey\\_curve25519.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\Crypto\\PublicKey\\_curve25519.pyd',
+   'BINARY'),
+  ('Crypto\\PublicKey\\_curve448.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\Crypto\\PublicKey\\_curve448.pyd',
+   'BINARY'),
+  ('Crypto\\PublicKey\\_ec_ws.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\Crypto\\PublicKey\\_ec_ws.pyd',
+   'BINARY'),
+  ('Crypto\\PublicKey\\_ed25519.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\Crypto\\PublicKey\\_ed25519.pyd',
+   'BINARY'),
+  ('Crypto\\PublicKey\\_ed448.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\Crypto\\PublicKey\\_ed448.pyd',
+   'BINARY'),
+  ('Crypto\\Util\\_cpuid_c.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\Crypto\\Util\\_cpuid_c.pyd',
+   'BINARY'),
+  ('Crypto\\Util\\_strxor.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\Crypto\\Util\\_strxor.pyd',
+   'BINARY'),
+  ('PIL\\_avif.cp310-win_amd64.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PIL\\_avif.cp310-win_amd64.pyd',
+   'EXTENSION'),
+  ('PIL\\_imaging.cp310-win_amd64.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PIL\\_imaging.cp310-win_amd64.pyd',
+   'EXTENSION'),
+  ('PIL\\_imagingcms.cp310-win_amd64.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PIL\\_imagingcms.cp310-win_amd64.pyd',
+   'EXTENSION'),
+  ('PIL\\_imagingmath.cp310-win_amd64.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PIL\\_imagingmath.cp310-win_amd64.pyd',
+   'EXTENSION'),
+  ('PIL\\_imagingtk.cp310-win_amd64.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PIL\\_imagingtk.cp310-win_amd64.pyd',
+   'EXTENSION'),
+  ('PIL\\_webp.cp310-win_amd64.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PIL\\_webp.cp310-win_amd64.pyd',
+   'EXTENSION'),
+  ('PySide6\\MSVCP140.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\MSVCP140.dll',
+   'BINARY'),
+  ('PySide6\\MSVCP140_1.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\Lib\\site-packages\\PySide6\\MSVCP140_1.dll',
+   'BINARY'),
+  ('PySide6\\MSVCP140_2.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\MSVCP140_2.dll',
+   'BINARY'),
+  ('PySide6\\Qt6Core.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\Lib\\site-packages\\PySide6\\Qt6Core.dll',
+   'BINARY'),
+  ('PySide6\\Qt6Gui.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\Lib\\site-packages\\PySide6\\Qt6Gui.dll',
+   'BINARY'),
+  ('PySide6\\Qt6Network.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\Lib\\site-packages\\PySide6\\Qt6Network.dll',
+   'BINARY'),
+  ('PySide6\\Qt6OpenGL.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\Lib\\site-packages\\PySide6\\Qt6OpenGL.dll',
+   'BINARY'),
+  ('PySide6\\Qt6Pdf.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\Lib\\site-packages\\PySide6\\Qt6Pdf.dll',
+   'BINARY'),
+  ('PySide6\\Qt6PrintSupport.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\Qt6PrintSupport.dll',
+   'BINARY'),
+  ('PySide6\\Qt6Qml.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\Lib\\site-packages\\PySide6\\Qt6Qml.dll',
+   'BINARY'),
+  ('PySide6\\Qt6QmlMeta.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\Lib\\site-packages\\PySide6\\Qt6QmlMeta.dll',
+   'BINARY'),
+  ('PySide6\\Qt6QmlModels.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\Lib\\site-packages\\PySide6\\Qt6QmlModels.dll',
+   'BINARY'),
+  ('PySide6\\Qt6QmlWorkerScript.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\Lib\\site-packages\\PySide6\\Qt6QmlWorkerScript.dll',
+   'BINARY'),
+  ('PySide6\\Qt6Quick.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\Lib\\site-packages\\PySide6\\Qt6Quick.dll',
+   'BINARY'),
+  ('PySide6\\Qt6Svg.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\Lib\\site-packages\\PySide6\\Qt6Svg.dll',
+   'BINARY'),
+  ('PySide6\\Qt6VirtualKeyboard.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\Lib\\site-packages\\PySide6\\Qt6VirtualKeyboard.dll',
+   'BINARY'),
+  ('PySide6\\Qt6Widgets.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\Lib\\site-packages\\PySide6\\Qt6Widgets.dll',
+   'BINARY'),
+  ('PySide6\\QtCore.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\QtCore.pyd',
+   'EXTENSION'),
+  ('PySide6\\QtGui.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\QtGui.pyd',
+   'EXTENSION'),
+  ('PySide6\\QtNetwork.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\QtNetwork.pyd',
+   'EXTENSION'),
+  ('PySide6\\QtPrintSupport.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\QtPrintSupport.pyd',
+   'EXTENSION'),
+  ('PySide6\\QtWidgets.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\QtWidgets.pyd',
+   'EXTENSION'),
+  ('PySide6\\VCRUNTIME140.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\VCRUNTIME140.dll',
+   'BINARY'),
+  ('PySide6\\VCRUNTIME140_1.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\VCRUNTIME140_1.dll',
+   'BINARY'),
+  ('PySide6\\opengl32sw.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\Lib\\site-packages\\PySide6\\opengl32sw.dll',
+   'BINARY'),
+  ('PySide6\\plugins\\generic\\qtuiotouchplugin.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\plugins\\generic\\qtuiotouchplugin.dll',
+   'BINARY'),
+  ('PySide6\\plugins\\iconengines\\qsvgicon.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\plugins\\iconengines\\qsvgicon.dll',
+   'BINARY'),
+  ('PySide6\\plugins\\imageformats\\qgif.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\plugins\\imageformats\\qgif.dll',
+   'BINARY'),
+  ('PySide6\\plugins\\imageformats\\qicns.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\plugins\\imageformats\\qicns.dll',
+   'BINARY'),
+  ('PySide6\\plugins\\imageformats\\qico.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\plugins\\imageformats\\qico.dll',
+   'BINARY'),
+  ('PySide6\\plugins\\imageformats\\qjpeg.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\plugins\\imageformats\\qjpeg.dll',
+   'BINARY'),
+  ('PySide6\\plugins\\imageformats\\qpdf.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\plugins\\imageformats\\qpdf.dll',
+   'BINARY'),
+  ('PySide6\\plugins\\imageformats\\qsvg.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\plugins\\imageformats\\qsvg.dll',
+   'BINARY'),
+  ('PySide6\\plugins\\imageformats\\qtga.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\plugins\\imageformats\\qtga.dll',
+   'BINARY'),
+  ('PySide6\\plugins\\imageformats\\qtiff.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\plugins\\imageformats\\qtiff.dll',
+   'BINARY'),
+  ('PySide6\\plugins\\imageformats\\qwbmp.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\plugins\\imageformats\\qwbmp.dll',
+   'BINARY'),
+  ('PySide6\\plugins\\imageformats\\qwebp.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\plugins\\imageformats\\qwebp.dll',
+   'BINARY'),
+  ('PySide6\\plugins\\networkinformation\\qnetworklistmanager.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\plugins\\networkinformation\\qnetworklistmanager.dll',
+   'BINARY'),
+  ('PySide6\\plugins\\platforminputcontexts\\qtvirtualkeyboardplugin.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\plugins\\platforminputcontexts\\qtvirtualkeyboardplugin.dll',
+   'BINARY'),
+  ('PySide6\\plugins\\platforms\\qdirect2d.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\plugins\\platforms\\qdirect2d.dll',
+   'BINARY'),
+  ('PySide6\\plugins\\platforms\\qminimal.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\plugins\\platforms\\qminimal.dll',
+   'BINARY'),
+  ('PySide6\\plugins\\platforms\\qoffscreen.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\plugins\\platforms\\qoffscreen.dll',
+   'BINARY'),
+  ('PySide6\\plugins\\platforms\\qwindows.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\plugins\\platforms\\qwindows.dll',
+   'BINARY'),
+  ('PySide6\\plugins\\styles\\qmodernwindowsstyle.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\plugins\\styles\\qmodernwindowsstyle.dll',
+   'BINARY'),
+  ('PySide6\\plugins\\tls\\qcertonlybackend.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\plugins\\tls\\qcertonlybackend.dll',
+   'BINARY'),
+  ('PySide6\\plugins\\tls\\qopensslbackend.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\plugins\\tls\\qopensslbackend.dll',
+   'BINARY'),
+  ('PySide6\\plugins\\tls\\qschannelbackend.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\plugins\\tls\\qschannelbackend.dll',
+   'BINARY'),
+  ('PySide6\\pyside6.abi3.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\pyside6.abi3.dll',
+   'BINARY'),
+  ('PySide6\\translations\\qt_ar.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qt_ar.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_bg.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qt_bg.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_ca.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qt_ca.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_cs.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qt_cs.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_da.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qt_da.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_de.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qt_de.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_en.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qt_en.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_es.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qt_es.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_fa.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qt_fa.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_fi.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qt_fi.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_fr.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qt_fr.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_gd.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qt_gd.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_gl.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qt_gl.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_he.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qt_he.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_help_ar.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qt_help_ar.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_help_bg.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qt_help_bg.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_help_ca.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qt_help_ca.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_help_cs.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qt_help_cs.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_help_da.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qt_help_da.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_help_de.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qt_help_de.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_help_en.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qt_help_en.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_help_es.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qt_help_es.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_help_fr.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qt_help_fr.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_help_gl.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qt_help_gl.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_help_hr.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qt_help_hr.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_help_hu.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qt_help_hu.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_help_it.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qt_help_it.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_help_ja.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qt_help_ja.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_help_ka.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qt_help_ka.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_help_ko.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qt_help_ko.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_help_nl.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qt_help_nl.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_help_nn.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qt_help_nn.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_help_pl.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qt_help_pl.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_help_pt_BR.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qt_help_pt_BR.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_help_ru.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qt_help_ru.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_help_sk.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qt_help_sk.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_help_sl.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qt_help_sl.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_help_sv.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qt_help_sv.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_help_tr.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qt_help_tr.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_help_uk.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qt_help_uk.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_help_zh_CN.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qt_help_zh_CN.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_help_zh_TW.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qt_help_zh_TW.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_hr.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qt_hr.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_hu.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qt_hu.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_it.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qt_it.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_ja.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qt_ja.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_ka.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qt_ka.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_ko.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qt_ko.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_lg.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qt_lg.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_lt.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qt_lt.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_lv.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qt_lv.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_nl.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qt_nl.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_nn.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qt_nn.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_pl.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qt_pl.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_pt_BR.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qt_pt_BR.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_pt_PT.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qt_pt_PT.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_ru.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qt_ru.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_sk.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qt_sk.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_sl.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qt_sl.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_sv.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qt_sv.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_tr.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qt_tr.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_uk.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qt_uk.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_zh_CN.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qt_zh_CN.qm',
+   'DATA'),
+  ('PySide6\\translations\\qt_zh_TW.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qt_zh_TW.qm',
+   'DATA'),
+  ('PySide6\\translations\\qtbase_ar.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qtbase_ar.qm',
+   'DATA'),
+  ('PySide6\\translations\\qtbase_bg.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qtbase_bg.qm',
+   'DATA'),
+  ('PySide6\\translations\\qtbase_ca.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qtbase_ca.qm',
+   'DATA'),
+  ('PySide6\\translations\\qtbase_cs.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qtbase_cs.qm',
+   'DATA'),
+  ('PySide6\\translations\\qtbase_da.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qtbase_da.qm',
+   'DATA'),
+  ('PySide6\\translations\\qtbase_de.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qtbase_de.qm',
+   'DATA'),
+  ('PySide6\\translations\\qtbase_en.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qtbase_en.qm',
+   'DATA'),
+  ('PySide6\\translations\\qtbase_es.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qtbase_es.qm',
+   'DATA'),
+  ('PySide6\\translations\\qtbase_fa.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qtbase_fa.qm',
+   'DATA'),
+  ('PySide6\\translations\\qtbase_fi.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qtbase_fi.qm',
+   'DATA'),
+  ('PySide6\\translations\\qtbase_fr.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qtbase_fr.qm',
+   'DATA'),
+  ('PySide6\\translations\\qtbase_gd.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qtbase_gd.qm',
+   'DATA'),
+  ('PySide6\\translations\\qtbase_he.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qtbase_he.qm',
+   'DATA'),
+  ('PySide6\\translations\\qtbase_hr.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qtbase_hr.qm',
+   'DATA'),
+  ('PySide6\\translations\\qtbase_hu.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qtbase_hu.qm',
+   'DATA'),
+  ('PySide6\\translations\\qtbase_it.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qtbase_it.qm',
+   'DATA'),
+  ('PySide6\\translations\\qtbase_ja.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qtbase_ja.qm',
+   'DATA'),
+  ('PySide6\\translations\\qtbase_ka.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qtbase_ka.qm',
+   'DATA'),
+  ('PySide6\\translations\\qtbase_ko.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qtbase_ko.qm',
+   'DATA'),
+  ('PySide6\\translations\\qtbase_lg.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qtbase_lg.qm',
+   'DATA'),
+  ('PySide6\\translations\\qtbase_lv.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qtbase_lv.qm',
+   'DATA'),
+  ('PySide6\\translations\\qtbase_nl.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qtbase_nl.qm',
+   'DATA'),
+  ('PySide6\\translations\\qtbase_nn.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qtbase_nn.qm',
+   'DATA'),
+  ('PySide6\\translations\\qtbase_pl.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qtbase_pl.qm',
+   'DATA'),
+  ('PySide6\\translations\\qtbase_pt_BR.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qtbase_pt_BR.qm',
+   'DATA'),
+  ('PySide6\\translations\\qtbase_ru.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qtbase_ru.qm',
+   'DATA'),
+  ('PySide6\\translations\\qtbase_sk.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qtbase_sk.qm',
+   'DATA'),
+  ('PySide6\\translations\\qtbase_sv.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qtbase_sv.qm',
+   'DATA'),
+  ('PySide6\\translations\\qtbase_tr.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qtbase_tr.qm',
+   'DATA'),
+  ('PySide6\\translations\\qtbase_uk.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qtbase_uk.qm',
+   'DATA'),
+  ('PySide6\\translations\\qtbase_zh_CN.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qtbase_zh_CN.qm',
+   'DATA'),
+  ('PySide6\\translations\\qtbase_zh_TW.qm',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\PySide6\\translations\\qtbase_zh_TW.qm',
+   'DATA'),
+  ('VCRUNTIME140.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\VCRUNTIME140.dll',
+   'BINARY'),
+  ('VCRUNTIME140_1.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\VCRUNTIME140_1.dll',
+   'BINARY'),
+  ('ZhongYi.exe',
+   'D:\\code\\zhongyi\\build\\ZhongYi\\ZhongYi.exe',
+   'EXECUTABLE'),
+  ('_asyncio.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\_asyncio.pyd',
+   'EXTENSION'),
+  ('_bz2.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\_bz2.pyd',
+   'EXTENSION'),
+  ('_cffi_backend.cp310-win_amd64.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\_cffi_backend.cp310-win_amd64.pyd',
+   'EXTENSION'),
+  ('_ctypes.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\_ctypes.pyd',
+   'EXTENSION'),
+  ('_decimal.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\_decimal.pyd',
+   'EXTENSION'),
+  ('_elementtree.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\_elementtree.pyd',
+   'EXTENSION'),
+  ('_hashlib.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\_hashlib.pyd',
+   'EXTENSION'),
+  ('_lzma.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\_lzma.pyd',
+   'EXTENSION'),
+  ('_multiprocessing.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\_multiprocessing.pyd',
+   'EXTENSION'),
+  ('_overlapped.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\_overlapped.pyd',
+   'EXTENSION'),
+  ('_queue.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\_queue.pyd',
+   'EXTENSION'),
+  ('_socket.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\_socket.pyd',
+   'EXTENSION'),
+  ('_ssl.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\_ssl.pyd',
+   'EXTENSION'),
+  ('_uuid.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\_uuid.pyd',
+   'EXTENSION'),
+  ('api-ms-win-core-console-l1-1-0.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\app\\jre\\bin\\api-ms-win-core-console-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-core-datetime-l1-1-0.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\app\\jre\\bin\\api-ms-win-core-datetime-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-core-debug-l1-1-0.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\app\\jre\\bin\\api-ms-win-core-debug-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-core-errorhandling-l1-1-0.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\app\\jre\\bin\\api-ms-win-core-errorhandling-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-core-fibers-l1-1-0.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\app\\jre\\bin\\api-ms-win-core-fibers-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-core-fibers-l1-1-1.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\app\\jre\\bin\\api-ms-win-core-fibers-l1-1-1.dll',
+   'BINARY'),
+  ('api-ms-win-core-file-l1-1-0.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\app\\jre\\bin\\api-ms-win-core-file-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-core-file-l1-2-0.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\app\\jre\\bin\\api-ms-win-core-file-l1-2-0.dll',
+   'BINARY'),
+  ('api-ms-win-core-file-l2-1-0.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\app\\jre\\bin\\api-ms-win-core-file-l2-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-core-handle-l1-1-0.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\app\\jre\\bin\\api-ms-win-core-handle-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-core-heap-l1-1-0.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\app\\jre\\bin\\api-ms-win-core-heap-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-core-interlocked-l1-1-0.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\app\\jre\\bin\\api-ms-win-core-interlocked-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-core-kernel32-legacy-l1-1-1.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\app\\jre\\bin\\api-ms-win-core-kernel32-legacy-l1-1-1.dll',
+   'BINARY'),
+  ('api-ms-win-core-libraryloader-l1-1-0.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\app\\jre\\bin\\api-ms-win-core-libraryloader-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-core-localization-l1-2-0.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\app\\jre\\bin\\api-ms-win-core-localization-l1-2-0.dll',
+   'BINARY'),
+  ('api-ms-win-core-memory-l1-1-0.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\app\\jre\\bin\\api-ms-win-core-memory-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-core-namedpipe-l1-1-0.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\app\\jre\\bin\\api-ms-win-core-namedpipe-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-core-processenvironment-l1-1-0.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\app\\jre\\bin\\api-ms-win-core-processenvironment-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-core-processthreads-l1-1-0.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\app\\jre\\bin\\api-ms-win-core-processthreads-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-core-processthreads-l1-1-1.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\app\\jre\\bin\\api-ms-win-core-processthreads-l1-1-1.dll',
+   'BINARY'),
+  ('api-ms-win-core-profile-l1-1-0.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\app\\jre\\bin\\api-ms-win-core-profile-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-core-rtlsupport-l1-1-0.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\app\\jre\\bin\\api-ms-win-core-rtlsupport-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-core-string-l1-1-0.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\app\\jre\\bin\\api-ms-win-core-string-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-core-synch-l1-1-0.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\app\\jre\\bin\\api-ms-win-core-synch-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-core-synch-l1-2-0.dll',
+   'c:\\Users\\dasy8\\AppData\\Local\\Programs\\TRAE SOLO '
+   'CN\\resources\\app\\modules\\ai-agent\\bin\\api-ms-win-core-synch-l1-2-0.dll',
+   'BINARY'),
+  ('api-ms-win-core-sysinfo-l1-1-0.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\app\\jre\\bin\\api-ms-win-core-sysinfo-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-core-sysinfo-l1-2-0.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\app\\jre\\bin\\api-ms-win-core-sysinfo-l1-2-0.dll',
+   'BINARY'),
+  ('api-ms-win-core-timezone-l1-1-0.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\app\\jre\\bin\\api-ms-win-core-timezone-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-core-util-l1-1-0.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\app\\jre\\bin\\api-ms-win-core-util-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-crt-conio-l1-1-0.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\app\\jre\\bin\\api-ms-win-crt-conio-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-crt-convert-l1-1-0.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\app\\jre\\bin\\api-ms-win-crt-convert-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-crt-environment-l1-1-0.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\app\\jre\\bin\\api-ms-win-crt-environment-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-crt-filesystem-l1-1-0.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\app\\jre\\bin\\api-ms-win-crt-filesystem-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-crt-heap-l1-1-0.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\app\\jre\\bin\\api-ms-win-crt-heap-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-crt-locale-l1-1-0.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\app\\jre\\bin\\api-ms-win-crt-locale-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-crt-math-l1-1-0.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\app\\jre\\bin\\api-ms-win-crt-math-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-crt-private-l1-1-0.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\app\\jre\\bin\\api-ms-win-crt-private-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-crt-process-l1-1-0.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\app\\jre\\bin\\api-ms-win-crt-process-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-crt-runtime-l1-1-0.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\app\\jre\\bin\\api-ms-win-crt-runtime-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-crt-stdio-l1-1-0.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\app\\jre\\bin\\api-ms-win-crt-stdio-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-crt-string-l1-1-0.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\app\\jre\\bin\\api-ms-win-crt-string-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-crt-time-l1-1-0.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\app\\jre\\bin\\api-ms-win-crt-time-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-crt-utility-l1-1-0.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\app\\jre\\bin\\api-ms-win-crt-utility-l1-1-0.dll',
+   'BINARY'),
+  ('base_library.zip',
+   'D:\\code\\zhongyi\\build\\ZhongYi\\base_library.zip',
+   'DATA'),
+  ('charset_normalizer\\cd.cp310-win_amd64.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\charset_normalizer\\cd.cp310-win_amd64.pyd',
+   'EXTENSION'),
+  ('charset_normalizer\\md.cp310-win_amd64.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\charset_normalizer\\md.cp310-win_amd64.pyd',
+   'EXTENSION'),
+  ('cryptography-46.0.7.dist-info\\INSTALLER',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\cryptography-46.0.7.dist-info\\INSTALLER',
+   'DATA'),
+  ('cryptography-46.0.7.dist-info\\METADATA',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\cryptography-46.0.7.dist-info\\METADATA',
+   'DATA'),
+  ('cryptography-46.0.7.dist-info\\RECORD',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\cryptography-46.0.7.dist-info\\RECORD',
+   'DATA'),
+  ('cryptography-46.0.7.dist-info\\WHEEL',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\cryptography-46.0.7.dist-info\\WHEEL',
+   'DATA'),
+  ('cryptography-46.0.7.dist-info\\licenses\\LICENSE',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\cryptography-46.0.7.dist-info\\licenses\\LICENSE',
+   'DATA'),
+  ('cryptography-46.0.7.dist-info\\licenses\\LICENSE.APACHE',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\cryptography-46.0.7.dist-info\\licenses\\LICENSE.APACHE',
+   'DATA'),
+  ('cryptography-46.0.7.dist-info\\licenses\\LICENSE.BSD',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\cryptography-46.0.7.dist-info\\licenses\\LICENSE.BSD',
+   'DATA'),
+  ('cryptography\\hazmat\\bindings\\_rust.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\cryptography\\hazmat\\bindings\\_rust.pyd',
+   'EXTENSION'),
+  ('images\\app_icon.ico', 'D:\\code\\zhongyi\\images\\app_icon.ico', 'DATA'),
+  ('images\\app_icon.png', 'D:\\code\\zhongyi\\images\\app_icon.png', 'DATA'),
+  ('images\\login_bg.jpg', 'D:\\code\\zhongyi\\images\\login_bg.jpg', 'DATA'),
+  ('images\\login_bg.png', 'D:\\code\\zhongyi\\images\\login_bg.png', 'DATA'),
+  ('libcrypto-1_1.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\libcrypto-1_1.dll',
+   'BINARY'),
+  ('libffi-7.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\libffi-7.dll',
+   'BINARY'),
+  ('libssl-1_1.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\libssl-1_1.dll',
+   'BINARY'),
+  ('numpy-2.2.6.dist-info\\DELVEWHEEL',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\numpy-2.2.6.dist-info\\DELVEWHEEL',
+   'DATA'),
+  ('numpy-2.2.6.dist-info\\INSTALLER',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\numpy-2.2.6.dist-info\\INSTALLER',
+   'DATA'),
+  ('numpy-2.2.6.dist-info\\LICENSE.txt',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\numpy-2.2.6.dist-info\\LICENSE.txt',
+   'DATA'),
+  ('numpy-2.2.6.dist-info\\METADATA',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\numpy-2.2.6.dist-info\\METADATA',
+   'DATA'),
+  ('numpy-2.2.6.dist-info\\RECORD',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\numpy-2.2.6.dist-info\\RECORD',
+   'DATA'),
+  ('numpy-2.2.6.dist-info\\REQUESTED',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\numpy-2.2.6.dist-info\\REQUESTED',
+   'DATA'),
+  ('numpy-2.2.6.dist-info\\WHEEL',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\numpy-2.2.6.dist-info\\WHEEL',
+   'DATA'),
+  ('numpy-2.2.6.dist-info\\entry_points.txt',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\numpy-2.2.6.dist-info\\entry_points.txt',
+   'DATA'),
+  ('numpy.libs\\libscipy_openblas64_-13e2df515630b4a41f92893938845698.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\numpy.libs\\libscipy_openblas64_-13e2df515630b4a41f92893938845698.dll',
+   'BINARY'),
+  ('numpy.libs\\msvcp140-263139962577ecda4cd9469ca360a746.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\numpy.libs\\msvcp140-263139962577ecda4cd9469ca360a746.dll',
+   'BINARY'),
+  ('numpy\\_core\\_multiarray_tests.cp310-win_amd64.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\numpy\\_core\\_multiarray_tests.cp310-win_amd64.pyd',
+   'EXTENSION'),
+  ('numpy\\_core\\_multiarray_umath.cp310-win_amd64.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\numpy\\_core\\_multiarray_umath.cp310-win_amd64.pyd',
+   'EXTENSION'),
+  ('numpy\\fft\\_pocketfft_umath.cp310-win_amd64.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\numpy\\fft\\_pocketfft_umath.cp310-win_amd64.pyd',
+   'EXTENSION'),
+  ('numpy\\linalg\\_umath_linalg.cp310-win_amd64.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\numpy\\linalg\\_umath_linalg.cp310-win_amd64.pyd',
+   'EXTENSION'),
+  ('numpy\\random\\_bounded_integers.cp310-win_amd64.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\numpy\\random\\_bounded_integers.cp310-win_amd64.pyd',
+   'EXTENSION'),
+  ('numpy\\random\\_common.cp310-win_amd64.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\numpy\\random\\_common.cp310-win_amd64.pyd',
+   'EXTENSION'),
+  ('numpy\\random\\_generator.cp310-win_amd64.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\numpy\\random\\_generator.cp310-win_amd64.pyd',
+   'EXTENSION'),
+  ('numpy\\random\\_mt19937.cp310-win_amd64.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\numpy\\random\\_mt19937.cp310-win_amd64.pyd',
+   'EXTENSION'),
+  ('numpy\\random\\_pcg64.cp310-win_amd64.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\numpy\\random\\_pcg64.cp310-win_amd64.pyd',
+   'EXTENSION'),
+  ('numpy\\random\\_philox.cp310-win_amd64.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\numpy\\random\\_philox.cp310-win_amd64.pyd',
+   'EXTENSION'),
+  ('numpy\\random\\_sfc64.cp310-win_amd64.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\numpy\\random\\_sfc64.cp310-win_amd64.pyd',
+   'EXTENSION'),
+  ('numpy\\random\\bit_generator.cp310-win_amd64.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\numpy\\random\\bit_generator.cp310-win_amd64.pyd',
+   'EXTENSION'),
+  ('numpy\\random\\mtrand.cp310-win_amd64.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\numpy\\random\\mtrand.cp310-win_amd64.pyd',
+   'EXTENSION'),
+  ('pyexpat.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\pyexpat.pyd',
+   'EXTENSION'),
+  ('pypdfium2\\version.json',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\pypdfium2\\version.json',
+   'DATA'),
+  ('pypdfium2_raw\\pdfium.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\pypdfium2_raw\\pdfium.dll',
+   'BINARY'),
+  ('pypdfium2_raw\\version.json',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\pypdfium2_raw\\version.json',
+   'DATA'),
+  ('pypinyin\\__init__.pyi',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\pypinyin\\__init__.pyi',
+   'DATA'),
+  ('pypinyin\\compat.pyi',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\pypinyin\\compat.pyi',
+   'DATA'),
+  ('pypinyin\\constants.pyi',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\pypinyin\\constants.pyi',
+   'DATA'),
+  ('pypinyin\\contrib\\_tone_rule.pyi',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\pypinyin\\contrib\\_tone_rule.pyi',
+   'DATA'),
+  ('pypinyin\\contrib\\mmseg.pyi',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\pypinyin\\contrib\\mmseg.pyi',
+   'DATA'),
+  ('pypinyin\\contrib\\neutral_tone.pyi',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\pypinyin\\contrib\\neutral_tone.pyi',
+   'DATA'),
+  ('pypinyin\\contrib\\tone_convert.pyi',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\pypinyin\\contrib\\tone_convert.pyi',
+   'DATA'),
+  ('pypinyin\\contrib\\tone_sandhi.pyi',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\pypinyin\\contrib\\tone_sandhi.pyi',
+   'DATA'),
+  ('pypinyin\\contrib\\uv.pyi',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\pypinyin\\contrib\\uv.pyi',
+   'DATA'),
+  ('pypinyin\\converter.pyi',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\pypinyin\\converter.pyi',
+   'DATA'),
+  ('pypinyin\\core.pyi',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\pypinyin\\core.pyi',
+   'DATA'),
+  ('pypinyin\\exceptions.pyi',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\pypinyin\\exceptions.pyi',
+   'DATA'),
+  ('pypinyin\\phonetic_symbol.pyi',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\pypinyin\\phonetic_symbol.pyi',
+   'DATA'),
+  ('pypinyin\\phrases_dict.json',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\pypinyin\\phrases_dict.json',
+   'DATA'),
+  ('pypinyin\\phrases_dict.pyi',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\pypinyin\\phrases_dict.pyi',
+   'DATA'),
+  ('pypinyin\\pinyin_dict.json',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\pypinyin\\pinyin_dict.json',
+   'DATA'),
+  ('pypinyin\\pinyin_dict.pyi',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\pypinyin\\pinyin_dict.pyi',
+   'DATA'),
+  ('pypinyin\\py.typed',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\pypinyin\\py.typed',
+   'DATA'),
+  ('pypinyin\\runner.pyi',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\pypinyin\\runner.pyi',
+   'DATA'),
+  ('pypinyin\\seg\\mmseg.pyi',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\pypinyin\\seg\\mmseg.pyi',
+   'DATA'),
+  ('pypinyin\\seg\\simpleseg.pyi',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\pypinyin\\seg\\simpleseg.pyi',
+   'DATA'),
+  ('pypinyin\\standard.pyi',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\pypinyin\\standard.pyi',
+   'DATA'),
+  ('pypinyin\\style\\__init__.pyi',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\pypinyin\\style\\__init__.pyi',
+   'DATA'),
+  ('pypinyin\\style\\_constants.pyi',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\pypinyin\\style\\_constants.pyi',
+   'DATA'),
+  ('pypinyin\\style\\_tone_convert.pyi',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\pypinyin\\style\\_tone_convert.pyi',
+   'DATA'),
+  ('pypinyin\\style\\_tone_rule.pyi',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\pypinyin\\style\\_tone_rule.pyi',
+   'DATA'),
+  ('pypinyin\\style\\_utils.pyi',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\pypinyin\\style\\_utils.pyi',
+   'DATA'),
+  ('pypinyin\\style\\bopomofo.pyi',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\pypinyin\\style\\bopomofo.pyi',
+   'DATA'),
+  ('pypinyin\\style\\braille_mainland.pyi',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\pypinyin\\style\\braille_mainland.pyi',
+   'DATA'),
+  ('pypinyin\\style\\cyrillic.pyi',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\pypinyin\\style\\cyrillic.pyi',
+   'DATA'),
+  ('pypinyin\\style\\finals.pyi',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\pypinyin\\style\\finals.pyi',
+   'DATA'),
+  ('pypinyin\\style\\gwoyeu.pyi',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\pypinyin\\style\\gwoyeu.pyi',
+   'DATA'),
+  ('pypinyin\\style\\initials.pyi',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\pypinyin\\style\\initials.pyi',
+   'DATA'),
+  ('pypinyin\\style\\others.pyi',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\pypinyin\\style\\others.pyi',
+   'DATA'),
+  ('pypinyin\\style\\tone.pyi',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\pypinyin\\style\\tone.pyi',
+   'DATA'),
+  ('pypinyin\\style\\wadegiles.pyi',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\pypinyin\\style\\wadegiles.pyi',
+   'DATA'),
+  ('pypinyin\\tools\\toneconvert.pyi',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\pypinyin\\tools\\toneconvert.pyi',
+   'DATA'),
+  ('pypinyin\\utils.pyi',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\pypinyin\\utils.pyi',
+   'DATA'),
+  ('pyreadline3-3.5.4.dist-info\\INSTALLER',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\pyreadline3-3.5.4.dist-info\\INSTALLER',
+   'DATA'),
+  ('pyreadline3-3.5.4.dist-info\\LICENSE.md',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\pyreadline3-3.5.4.dist-info\\LICENSE.md',
+   'DATA'),
+  ('pyreadline3-3.5.4.dist-info\\METADATA',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\pyreadline3-3.5.4.dist-info\\METADATA',
+   'DATA'),
+  ('pyreadline3-3.5.4.dist-info\\RECORD',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\pyreadline3-3.5.4.dist-info\\RECORD',
+   'DATA'),
+  ('pyreadline3-3.5.4.dist-info\\WHEEL',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\pyreadline3-3.5.4.dist-info\\WHEEL',
+   'DATA'),
+  ('pyreadline3-3.5.4.dist-info\\top_level.txt',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\pyreadline3-3.5.4.dist-info\\top_level.txt',
+   'DATA'),
+  ('python3.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\python3.dll',
+   'BINARY'),
+  ('python310.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\python310.dll',
+   'BINARY'),
+  ('select.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\select.pyd',
+   'EXTENSION'),
+  ('setuptools\\_vendor\\jaraco\\text\\Lorem ipsum.txt',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\setuptools\\_vendor\\jaraco\\text\\Lorem '
+   'ipsum.txt',
+   'DATA'),
+  ('shiboken6\\MSVCP140.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\Lib\\site-packages\\shiboken6\\MSVCP140.dll',
+   'BINARY'),
+  ('shiboken6\\Shiboken.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\shiboken6\\Shiboken.pyd',
+   'EXTENSION'),
+  ('shiboken6\\VCRUNTIME140.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\shiboken6\\VCRUNTIME140.dll',
+   'BINARY'),
+  ('shiboken6\\VCRUNTIME140_1.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\shiboken6\\VCRUNTIME140_1.dll',
+   'BINARY'),
+  ('shiboken6\\shiboken6.abi3.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\Lib\\site-packages\\shiboken6\\shiboken6.abi3.dll',
+   'BINARY'),
+  ('tutorial\\chl.sql', 'D:\\code\\zhongyi\\tutorial\\chl.sql', 'DATA'),
+  ('tutorial\\edit.sql', 'D:\\code\\zhongyi\\tutorial\\edit.sql', 'DATA'),
+  ('tutorial\\zy.sql', 'D:\\code\\zhongyi\\tutorial\\zy.sql', 'DATA'),
+  ('tutorial\\使用教程.pdf', 'D:\\code\\zhongyi\\tutorial\\使用教程.pdf', 'DATA'),
+  ('tutorial\\说明.txt', 'D:\\code\\zhongyi\\tutorial\\说明.txt', 'DATA'),
+  ('ucrtbase.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\app\\jre\\bin\\ucrtbase.dll',
+   'BINARY'),
+  ('unicodedata.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\unicodedata.pyd',
+   'EXTENSION'),
+  ('yaml\\_yaml.cp310-win_amd64.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\yaml\\_yaml.cp310-win_amd64.pyd',
+   'EXTENSION')],)

@@ -225,7 +225,14 @@ class CaseReportGenerator(PreviewGenerator):
             if not name:
                 continue
             dose = str(self.data.get(f"用量{i}", "") or "").strip()
-            medicines.append(f"{name} {dose}g" if dose and dose.lower() != "none" else name)
+            decoction = str(self.data.get(f"先煎后下{i}", "") or "").strip()
+            if dose and dose.lower() != "none":
+                med_text = f"{name} {dose}g"
+            else:
+                med_text = name
+            if decoction:
+                med_text += f"（{decoction}）"
+            medicines.append(med_text)
         if not medicines:
             medicines = ["无"]
 
@@ -489,10 +496,14 @@ class PrescriptionReportGenerator(CaseReportGenerator):
             if not name:
                 continue
             dose = str(self.data.get(f"用量{i}", "") or "").strip()
+            decoction = str(self.data.get(f"先煎后下{i}", "") or "").strip()
             if dose and dose.lower() != "none":
-                medicines.append(f"{safe_text(name)} {safe_text(dose)}g")
+                med_text = f"{safe_text(name)} {safe_text(dose)}g"
             else:
-                medicines.append(safe_text(name))
+                med_text = safe_text(name)
+            if decoction:
+                med_text += f"（{safe_text(decoction)}）"
+            medicines.append(med_text)
         if not medicines:
             medicines = ["无"]
 

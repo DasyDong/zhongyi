@@ -17,6 +17,7 @@ class DrugUsageWindow(QtWidgets.QDialog, Ui_Dialog):
         self.init_db()
         self.load_data()
         self.m_tbl_DrugUsage.setColumnHidden(0, True)  # 隐藏编号列
+        self.m_tbl_DrugUsage.setWordWrap(True)  # 启用自动换行
 
     def setup_connections(self):
         """连接按钮信号与槽函数"""
@@ -53,8 +54,7 @@ class DrugUsageWindow(QtWidgets.QDialog, Ui_Dialog):
                         if col == 0:  # 编号列不可编辑
                             item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
                         else:
-                            # 启用自动换行
-                            item.setFlags(item.flags() | QtCore.Qt.TextWordWrap)
+                            pass  # 可编辑，自动换行由表格级 setWordWrap 控制
                         self.m_tbl_DrugUsage.setItem(row, col, item)
 
                 # 自动调整行高以匹配内容
@@ -73,8 +73,7 @@ class DrugUsageWindow(QtWidgets.QDialog, Ui_Dialog):
             if col == 0:
                 item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
             else:
-                # 启用自动换行
-                item.setFlags(item.flags() | QtCore.Qt.TextWordWrap)
+                pass  # 可编辑，自动换行由表格级 setWordWrap 控制
             self.m_tbl_DrugUsage.setItem(row, col, item)
 
         # 自动调整行高以匹配内容

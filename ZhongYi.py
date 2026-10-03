@@ -11,6 +11,8 @@ from PySide6.QtWidgets import (
     QInputDialog, QVBoxLayout, QLabel, QDialogButtonBox
 )
 from PySide6.QtCore import Qt, QTimer
+from path_utils import resource_path
+
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import unpad
 from Crypto.Hash import SHA256
@@ -61,7 +63,7 @@ class LoginDialog(QDialog, Ui_Login_Dialog):
         self.setWindowTitle("登录界面")
 
         # 设置窗口图标
-        icon_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "images", "app_icon.png")
+        icon_path = resource_path("images/app_icon.png")
         if os.path.exists(icon_path):
             self.setWindowIcon(QIcon(icon_path))
 
@@ -73,6 +75,19 @@ class LoginDialog(QDialog, Ui_Login_Dialog):
     def _setup_login_layout(self):
         """给登录表单加白色背景卡片，确保在图片上清晰可见。"""
         from PySide6.QtWidgets import QWidget, QVBoxLayout
+
+        # 设置登录背景图（使用 resource_path 兼容打包环境）
+        bg_path = resource_path("images/login_bg.png")
+        if os.path.exists(bg_path):
+            self.Backgroup_img.setStyleSheet(
+                "#Backgroup_img {"
+                "background-image: url(%s);"
+                "background-position: top center;"
+                "background-repeat: no-repeat;"
+                "background-color: #e0e0e0;"
+                "}"
+                % bg_path.replace("\\", "/")
+            )
 
         # 创建白色背景卡片包裹登录表单
         white_panel = QWidget(self.Backgroup_img)
@@ -94,8 +109,9 @@ class LoginDialog(QDialog, Ui_Login_Dialog):
                 break
 
     def load_db_config(self):
+        from Database_connection import _config_file_path
         try:
-            with open("Link_loop.enc", "rb") as f:
+            with open(_config_file_path(), "rb") as f:
                 iv = f.read(16)
                 ciphertext = f.read()
 
@@ -350,7 +366,7 @@ class LoginDialog(QDialog, Ui_Login_Dialog):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     # 设置应用程序图标（任务栏图标）
-    icon_path = os.path.join(os.path.dirname(__file__), "images", "app_icon.png")
+    icon_path = resource_path("images/app_icon.png")
     if os.path.exists(icon_path):
         app.setWindowIcon(QIcon(icon_path))
     # 设置默认区域为中文

@@ -1,4 +1,5 @@
 import os
+from path_utils import resource_path
 import re
 import pymysql
 import shutil
@@ -88,7 +89,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         self._active_patient_id = None
 
         # 设置窗口图标
-        icon_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "images", "app_icon.png")
+        icon_path = resource_path("images/app_icon.png")
         if os.path.exists(icon_path):
             self.setWindowIcon(QIcon(icon_path))
         self.ensure_case_report_table()
@@ -107,8 +108,8 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         self.m_tle_PatientInfo.setRowHidden(4, True)
         self.m_tle_PatientInfo.setRowHidden(1, False)
         self.m_tle_PatientInfo.setRowHidden(2, False)
-        self.m_tle_PatientInfo.setMinimumHeight(250)
-        self.m_tle_PatientInfo.setMaximumHeight(300)
+        self.m_tle_PatientInfo.setMinimumHeight(200)
+        self.m_tle_PatientInfo.setMaximumHeight(240)
 
         # 确保初始有选中行
         if self.m_tle_Basic_Filter.rowCount() > 0:
@@ -261,6 +262,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         self.m_tle_Diagnosis.currentCellChanged.connect(self.handle_Diagnosis_cell_changed)
 
         self.m_tbl_DrugUsage.setColumnHidden(0, True)
+        self.m_tbl_DrugUsage.setMinimumHeight(450)  # 中药治疗表格最小高度，显示更多行
         self.m_tbl_DrugUsage.setRowCount(40)
         for row in range(40):
             for column in range(4):
@@ -550,6 +552,11 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         # 保持输入框横向铺满中间区域；各输入框自身设置不同高度上限，
         # 避免切换患者后被表单布局垂直拉伸。
         report_layout.setFieldGrowthPolicy(QtWidgets.QFormLayout.AllNonFixedFieldsGrow)
+        # 确保滚动区域内容高度由内容决定，而非被拉伸填满
+        report_panel.setSizePolicy(
+            QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Minimum,
+        )
 
         self.case_report_id = QtWidgets.QLabel("新建")
         self.case_report_patient_id = QtWidgets.QLabel("-")
@@ -582,15 +589,18 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         self.case_report_allergy_history = text_field("case_report_过敏史", 70)
         self.case_report_personal_history = text_field("case_report_个人史", 70)
         self.case_report_diagnosis = text_field("case_report_诊断", 91)
-        self.case_report_prescription = text_field("case_report_医嘱处方", 119)
+        self.case_report_prescription = text_field("case_report_医嘱处方", 155)
         # 处方摘要使用等宽字体，配合每行5味药的固定列宽显示对齐。
-        prescription_font = QFont("Menlo")
+        # 使用 Consolas（西文等宽）+ 系统默认中文字体（中文全角=2英文字宽）
+        prescription_font = QFont()
+        prescription_font.setFamilies(["Consolas", "Courier New", "Microsoft YaHei", "SimSun"])
         prescription_font.setPointSize(11)
+        prescription_font.setStyleHint(QFont.Monospace)
         self.case_report_prescription.setFont(prescription_font)
         self.case_report_medication_method = text_field("case_report_服药方法", 72)
         self.case_report_contraindication = text_field("case_report_禁忌", 70)
         self.case_report_contraindication.setPlainText("忌食辛辣生冷油腻、避风寒")
-        self.case_report_special_note = text_field("case_report_备注", 70)
+        self.case_report_special_note = text_field("case_report_备注", 140)
         self.case_report_special_note.setPlainText("无")
         self.case_report_prescription.setReadOnly(False)
         self.case_report_prescription.setPlaceholderText("可直接修改中药处方，药物之间至少用十个空格分隔…")
@@ -665,6 +675,8 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         scroll.setWidgetResizable(True)
         scroll.setAlignment(Qt.AlignTop)
         scroll.setFrameShape(QtWidgets.QFrame.NoFrame)
+        scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         scroll.setWidget(report_panel)
         # 清除旧病例布局项，避免隐藏控件和旧伸缩项在中间区域留下空白。
         clear_layout_items(self.verticalLayout_5)
@@ -737,15 +749,27 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
                 self._active_patient_id = item.text().strip()
         return self._active_patient_id
 
+    def patient_info_row(self, field_name):
+        """根据字段名获取患者信息表的行索引，避免硬编码。"""
+        for row in range(self.m_tle_PatientInfo.rowCount()):
+            item = self.m_tle_PatientInfo.item(row, 0)
+            if item and item.text() == field_name:
+                return row
+        return -1
+
     def current_case_number(self):
         """界面统一展示病例号；数据库内部仍使用常规资料的主键。"""
-        item = self.m_tle_PatientInfo.item(8, 1)
+        row = self.patient_info_row("病历号")
+        item = self.m_tle_PatientInfo.item(row, 1) if row >= 0 else None
         return item.text().strip() if item and item.text().strip() else "-"
 
     def _sync_case_report_prescription_from_table(self, item=None):
         """中药治疗表格修改后，同步病例报告中的重要处方摘要。"""
         if hasattr(self, "case_report_prescription") and not self.case_report_prescription.hasFocus():
             self.case_report_prescription.setPlainText(self.prescription_text())
+        # 同步煎法对应备注到特殊备注栏
+        if hasattr(self, "case_report_special_note") and not self.case_report_special_note.hasFocus():
+            self._sync_decoction_notes()
 
     def normalized_prescription_text(self):
         """统一重要处方格式：药物之间至少十个空格，不逐味换行。"""
@@ -763,24 +787,14 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
                     line += f"（{decoction.text().strip()}）"
                 items.append(line.strip())
 
-        # 医嘱处方按每行5味药排版，并使用固定显示宽度让各行列位置对齐。
-        def display_width(text):
-            return sum(2 if ord(char) > 0x7F else 1 for char in text)
-
+        # 医嘱处方按每行4味药排版，药物之间用固定空格分隔，左对齐。
         if not items:
             return ""
-        column_width = max(12, max(display_width(item) for item in items) + 2)
+        sep = "          "  # 10个空格分隔
         lines = []
-        for start in range(0, len(items), 5):
-            row_items = items[start:start + 5]
-            columns = []
-            for index, item in enumerate(row_items):
-                if index < len(row_items) - 1:
-                    padding = max(2, column_width - display_width(item))
-                    columns.append(item + " " * padding)
-                else:
-                    columns.append(item)
-            lines.append("".join(columns).rstrip())
+        for start in range(0, len(items), 4):
+            row_items = items[start:start + 4]
+            lines.append(sep.join(row_items))
         return "\n".join(lines)
 
     def save_case_report(self):
@@ -821,6 +835,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
                 self.case_rx_frequency.setCurrentText(str(row[14] or "一日二次"))
                 self.case_rx_volume.setCurrentText(str(row[15] or "一袋/150ml"))
                 self._sync_case_report_usage_display()
+                self._sync_decoction_notes()
             else:
                 self.clear_case_report(patient_id)
         except Exception as e:
@@ -849,6 +864,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         self.case_rx_volume.setCurrentText("一袋/150ml")
         self._sync_case_report_usage_display()
         self._sync_extended_prescription_note()
+        self._sync_decoction_notes()
         diagnosis_item = self.m_tle_PatientInfo.item(4, 1)
         self.case_report_diagnosis.setPlainText(
             diagnosis_item.text() if diagnosis_item and diagnosis_item.text() else ""
@@ -869,6 +885,82 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
                 self.case_report_special_note.setPlainText(marker)
             else:
                 self.case_report_special_note.setPlainText(note + "\n" + marker)
+
+    def _sync_decoction_notes(self):
+        """将煎法对应的用法说明追加到备注中，同一个煎法只追加一次。"""
+        if not hasattr(self, "case_report_special_note"):
+            return
+        try:
+            note_widget = self.case_report_special_note
+            note_text = note_widget.toPlainText().strip()
+
+            # 1. 收集当前所有煎法（去重）
+            decoction_set = set()
+            for row in range(self.m_tbl_DrugUsage.rowCount()):
+                item = self.m_tbl_DrugUsage.item(row, 3)
+                if item and item.text().strip():
+                    decoction_set.add(item.text().strip())
+
+            # 2. 查询用法表，获取所有煎法及对应的用法说明
+            #    （查询全部用于清理旧备注；当前选中的用于追加新备注）
+            try:
+                from Database_connection import load_db_config
+                import pymysql
+                conn = pymysql.connect(**load_db_config())
+                with conn.cursor() as cursor:
+                    cursor.execute("SELECT 煎法, 用法 FROM 用法")
+                    all_decoction_map = {}
+                    decoction_map = {}
+                    for row in cursor.fetchall():
+                        dc_name = row[0]
+                        dc_usage = row[1]
+                        all_decoction_map[dc_name] = dc_usage
+                        if dc_name in decoction_set and dc_usage and str(dc_usage).strip():
+                            decoction_map[dc_name] = dc_usage
+                conn.close()
+            except Exception:
+                return
+
+            if not all_decoction_map:
+                return
+
+            # 3. 清理备注中之前自动追加的煎法说明
+            lines = note_text.split("\n") if note_text and note_text != "无" else []
+            # 过滤掉之前自动追加的煎法说明行
+            filtered_lines = []
+            for line in lines:
+                stripped = line.strip()
+                # 判断是否是自动追加的煎法说明行（格式：煎法名：说明）
+                is_auto = False
+                for dc_name in all_decoction_map.keys():
+                    if stripped.startswith(dc_name + "：") or stripped.startswith(dc_name + ":"):
+                        is_auto = True
+                        break
+                if not is_auto:
+                    filtered_lines.append(line)
+            note_text = "\n".join(filtered_lines).strip()
+
+            # 4. 追加当前煎法说明（同一个煎法只追加一次）
+            if decoction_map:
+                new_lines = []
+                for dc_name, dc_usage in decoction_map.items():
+                    new_lines.append(f"{dc_name}：{dc_usage.strip()}")
+
+                if note_text:
+                    final_note = note_text + "\n" + "\n".join(new_lines)
+                else:
+                    final_note = "\n".join(new_lines)
+
+                note_widget.setPlainText(final_note)
+            else:
+                # 没有煎法了，只保留清理后的备注
+                if note_text:
+                    note_widget.setPlainText(note_text)
+                else:
+                    note_widget.setPlainText("无")
+
+        except Exception:
+            pass
 
     def _sync_case_report_usage_display(self):
         """同步中间病例报告输入区的处方用法显示。"""
@@ -1045,28 +1137,19 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
                 self.on_row_Diagnosis_click(item)  # 调用原有的点击处理函数
 
     def checkdiagnotetexteidtlenth(self):
-        if len(self.m_edt_Diagnote_4.toPlainText()) > 100:
-            text = self.m_edt_Diagnote_4.toPlainText()[:100]
-            self.m_edt_Diagnote_4.setText(text)
-            QMessageBox.warning(self, "警告", "输入的文字不得超过100字")
+        # 已取消字数限制
+        pass
 
     def checkdacubtetexteidtlenth(self):
-        if len(self.m_edt_acup.toPlainText()) > 200:
-            text = self.m_edt_acup.toPlainText()[:200]
-            self.m_edt_acup.setText(text)
-            QMessageBox.warning(self, "警告", "输入的文字不得超过200字")
+        # 已取消字数限制
+        pass
 
     def checkdiagconcllenth(self):
-        if len(self.m_edt_DiagConcl_2.toPlainText()) > 50:
-            text = self.m_edt_DiagConcl_2.toPlainText()[:50]
-            self.m_edt_DiagConcl_2.setText(text)
-            QMessageBox.warning(self, "警告", "输入的文字不得超过50字")
+        # 已取消字数限制
+        pass
 
     def handle_refresh_sympconcl_content(self):
-        current_text = self.m_edt_SympConcl.toPlainText()
-        if len(current_text) > 200:
-            self.m_edt_SympConcl.setPlainText(current_text[:200])
-            QMessageBox.warning(self, "警告", "输入的文字不得超过200字")
+        # 已取消字数限制，仅同步到患者信息表
         item = self.m_tle_PatientInfo.item(3, 1)
         if item is not None:
             item.setText(self.m_edt_SympConcl.toPlainText().strip() or "")
@@ -1101,9 +1184,11 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         self.m_edtAcubPrice.setText("0")
         self.m_edtTotalPrice.setText("0")
         # 随机生成8位病历号
-        item = self.m_tle_PatientInfo.item(8, 1)
-        if item is not None:
-            item.setText(str(random.randint(10_000_000, 99_999_999)))
+        case_row = self.patient_info_row("病历号")
+        if case_row >= 0:
+            item = self.m_tle_PatientInfo.item(case_row, 1)
+            if item is not None:
+                item.setText(str(random.randint(10_000_000, 99_999_999)))
 
         self.insert_or_update_patient_record(True, True)
         self.label_PatientPhoto.clear()
@@ -1162,48 +1247,55 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         valid_data["diagnosis"] = diagnosis
 
         # 血压校验（格式：120/80）
-        bp = self.m_tle_PatientInfo.item(5, 1).text().strip() or ""
+        bp_row = self.patient_info_row("血压")
+        bp_item = self.m_tle_PatientInfo.item(bp_row, 1) if bp_row >= 0 else None
+        bp = bp_item.text().strip() if bp_item else ""
         valid_data["blood_pressure"] = bp
 
         # 住址校验（非空）
-        address = self.m_tle_PatientInfo.item(6, 1).text().strip() or ""
+        addr_row = self.patient_info_row("住址")
+        addr_item = self.m_tle_PatientInfo.item(addr_row, 1) if addr_row >= 0 else None
+        address = addr_item.text().strip() if addr_item else ""
         valid_data["address"] = address
 
         # 病历号校验（确保存在且为有效整数）
+        case_row = self.patient_info_row("病历号")
         try:
-            case_number_item = self.m_tle_PatientInfo.item(8, 1)
+            case_number_item = self.m_tle_PatientInfo.item(case_row, 1) if case_row >= 0 else None
             if not case_number_item or not case_number_item.text().strip():
-                errors.append(("病历号不能为空", 8))
+                errors.append(("病历号不能为空", case_row))
             else:
                 case_number = case_number_item.text().strip()
                 valid_data["case_number"] = int(case_number)
                 if valid_data["case_number"] <= 0:
-                    errors.append(("病历号必须为正整数", 8))
+                    errors.append(("病历号必须为正整数", case_row))
         except ValueError:
-            errors.append(("病历号必须为有效整数", 8))
+            errors.append(("病历号必须为有效整数", case_row))
 
         # 身份证号（允许为空，按文本保存，避免丢失开头的0）
-        id_card_item = self.m_tle_PatientInfo.item(9, 1)
+        id_row = self.patient_info_row("身份证号")
+        id_card_item = self.m_tle_PatientInfo.item(id_row, 1) if id_row >= 0 else None
         valid_data["id_card"] = id_card_item.text().strip() if id_card_item else ""
 
 
         # 电话校验（11位数字）
-        phone_item = self.m_tle_PatientInfo.item(7, 1)
+        phone_row = self.patient_info_row("电话")
+        phone_item = self.m_tle_PatientInfo.item(phone_row, 1) if phone_row >= 0 else None
         phone = phone_item.text().strip() if phone_item else ""
         valid_data["phone"] = phone  # 允许空值和非数字
 
         # 诊金校验（正整数）
         try:
-            case_number_item = self.m_tle_PatientInfo.item(8, 1)
+            case_number_item = self.m_tle_PatientInfo.item(case_row, 1) if case_row >= 0 else None
             if not case_number_item or not case_number_item.text().strip():
-                errors.append(("病历号不能为空", 8))
+                errors.append(("病历号不能为空", case_row))
 
             case_number = int(case_number_item.text())
             if case_number <= 0:
                 raise ValueError
             valid_data["case_number"] = case_number
         except:
-            errors.append(("病历号必须为正整数", 3))
+            errors.append(("病历号必须为正整数", case_row))
 
         drugnum = self.m_edtDosesNumber.text().strip() or "0"
         if drugnum != "":
@@ -1319,7 +1411,8 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
                 query = """INSERT INTO 常规资料 (姓名, 性别, 年龄, 病证, 诊断, 血压, 住址, 电话, 病历号, 身份证号, 诊金) 
                                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
 
-                item = self.m_tle_PatientInfo.item(8, 1)
+                case_row = self.patient_info_row("病历号")
+                item = self.m_tle_PatientInfo.item(case_row, 1) if case_row >= 0 else None
                 if item != None:
                     case_number = int(item.text())
                     case_number_data = ("", "", "", "", "", "", "", "", case_number, "", consultation_fee)
@@ -1561,6 +1654,8 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
     def handle_savepatientinfo_click(self):
         # 原有的保存逻辑
         self._last_saved_patient_id = self.insert_or_update_patient_record(False, False)
+        if not self._last_saved_patient_id:
+            return  # 保存失败（数据校验未通过等），已在内部提示
 
         # 获取当前登录用户的医生名字
         doctor_name = None
@@ -1609,6 +1704,8 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         finally:
             if connection:
                 connection.close()
+
+        QMessageBox.information(self, "保存成功", "患者信息已保存")
 
     def handle_deletepatientinfo_click(self):
         current_row = self.m_tle_Basic_Filter.currentRow()
@@ -1963,7 +2060,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         # 定义字段名称并初始化表头
         fields = [
             '姓名', '性别', '年龄', '病证', '诊断',
-            '血压', '住址', '电话', '病历号', '身份证号'
+            '住址', '电话', '病历号', '身份证号', '血压'
         ]
         self.m_tle_PatientInfo.setRowCount(len(fields))
         self.m_tle_PatientInfo.setColumnCount(2)
@@ -1985,11 +2082,15 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
             value_item.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable | Qt.ItemIsEditable)
             self.m_tle_PatientInfo.setItem(row, 1, value_item)
 
-        # 如果有数据，填充数据
+        # 如果有数据，按字段名映射填充（SQL查询顺序：姓名,性别,年龄,病证,诊断,血压,住址,电话,病历号,身份证号）
         if data:
-            for row, value in enumerate(data):
-                if row < self.m_tle_PatientInfo.rowCount():
-                    self.m_tle_PatientInfo.item(row, 1).setText(str(value))
+            sql_field_order = ['姓名', '性别', '年龄', '病证', '诊断', '血压', '住址', '电话', '病历号', '身份证号']
+            for idx, value in enumerate(data):
+                if idx < len(sql_field_order):
+                    field_name = sql_field_order[idx]
+                    row = self.patient_info_row(field_name)
+                    if row >= 0:
+                        self.m_tle_PatientInfo.item(row, 1).setText(str(value))
 
         # 调整列宽
         self.m_tle_PatientInfo.resizeColumnsToContents()
@@ -2476,7 +2577,8 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
 
     # 煎法相关方法
     def _get_decoction_methods(self):
-        return self._fetch_data("SELECT 煎法 FROM 用法", cache_key='decoction')
+        methods = self._fetch_data("SELECT 煎法 FROM 用法", cache_key='decoction')
+        return [""] + [m for m in methods if m and m.strip()]
 
     # 通用数据库方法
     def _fetch_data(self, query, params=None, cache_key=None):

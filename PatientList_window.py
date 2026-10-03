@@ -135,6 +135,7 @@ class ComparisonDialog(QDialog):
         self.table.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
         self.table.horizontalHeader().setSectionResizeMode(2, QHeaderView.Stretch)
         self.table.verticalHeader().setVisible(False)
+        self.table.setWordWrap(True)
 
         self.table.setRowCount(len(columns))
         for row, (col_name, val1, val2) in enumerate(zip(columns, data1, data2)):
@@ -147,14 +148,14 @@ class ComparisonDialog(QDialog):
             item1 = QTableWidgetItem(val1 if val1 else "")
             item1.setFlags(item1.flags() & ~Qt.ItemIsEditable)  # 设置为不可编辑
             item1.setTextAlignment(Qt.AlignTop | Qt.AlignLeft)  # 设置文本对齐方式
-            item1.setFlags(item1.flags() | Qt.TextWordWrap)  # 启用文本自动换行
+            # 自动换行由表格级 setWordWrap 控制
             self.table.setItem(row, 1, item1)
 
             # 设置比较对象：乙列的内容
             item2 = QTableWidgetItem(val2 if val2 else "")
             item2.setFlags(item2.flags() & ~Qt.ItemIsEditable)  # 设置为不可编辑
             item2.setTextAlignment(Qt.AlignTop | Qt.AlignLeft)  # 设置文本对齐方式
-            item2.setFlags(item2.flags() | Qt.TextWordWrap)  # 启用文本自动换行
+            # 自动换行由表格级 setWordWrap 控制
             self.table.setItem(row, 2, item2)
 
             if val1 != val2:
