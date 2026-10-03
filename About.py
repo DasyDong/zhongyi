@@ -35,7 +35,7 @@ class AboutDialog(QDialog):
 
         # 添加内容部件
         components = [
-            self.create_title_label("清虚内守中医处方", title_font),
+            self.create_title_label("建华卫生所中医处方", title_font),
             self.create_content_label(f"版本: 5.25.0511<br>发行日期：2025-2-27<br>更新日期：2025-5-11<br>版权所有: X.L&Frank L"),
             self.create_section_title("设计", title_font),
             self.create_content_label("主要功能由X.L设计，软件界面和少部分功能由Frank L设计。"),
@@ -120,7 +120,7 @@ class AboutDialog(QDialog):
             </li>
 
             <li><b>设计宗旨：</b><br>
-                <span style="color: rgb(0, 128, 0); font-weight: bold;">清虚内守中医处方软件是专门为中医师设计的，并不涉及过多繁杂的功能，以便中医师不再为数据的保存分类以及查找对比而苦恼，可以不受干扰的潜心于中医广阔的天地中，以医入道。</span></p>
+                <span style="color: rgb(0, 128, 0); font-weight: bold;">建华卫生所中医处方软件是专门为中医师设计的，并不涉及过多繁杂的功能，以便中医师不再为数据的保存分类以及查找对比而苦恼，可以不受干扰的潜心于中医广阔的天地中，以医入道。</span></p>
             </li>
 
             <li><b>开发背景：</b><br>

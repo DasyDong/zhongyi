@@ -1,7 +1,8 @@
 from functools import partial
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QStringListModel
 from PySide6 import QtWidgets
-from PySide6.QtWidgets import QTableWidget, QDialog, QTableWidgetItem, QMessageBox
+from PySide6.QtWidgets import (QTableWidget, QDialog, QTableWidgetItem, QMessageBox,
+                               QCompleter, QLineEdit, QStyledItemDelegate)
 from PySide6.QtWidgets import QAbstractItemView
 from ui_DrugFormulas import Ui_DialogDrugSelec
 from DatabaseUtil import myDatabaseUtil
@@ -10,6 +11,24 @@ from Database_connection import load_db_config
 import warnings
 
 warnings.filterwarnings("ignore", category=DeprecationWarning, message="sipPyTypeDict.*")
+
+
+class FormulaDrugCompleterDelegate(QStyledItemDelegate):
+    """处方设置药物列专用编辑器，支持输入匹配自动补全。"""
+
+    def __init__(self, model, parent=None):
+        super().__init__(parent)
+        self.model = model
+
+    def createEditor(self, parent, option, index):
+        editor = QLineEdit(parent)
+        completer = QCompleter(self.model, editor)
+        completer.setCaseSensitivity(Qt.CaseInsensitive)
+        completer.setFilterMode(Qt.MatchContains)
+        completer.setCompletionMode(QCompleter.PopupCompletion)
+        editor.setCompleter(completer)
+        completer.activated.connect(editor.setText)
+        return editor
 
 
 class MyDrugFormulasWindow(QDialog, Ui_DialogDrugSelec):
@@ -68,6 +87,17 @@ class MyDrugFormulasWindow(QDialog, Ui_DialogDrugSelec):
         self.m_edt_FormulaSearchSet_4.setPlaceholderText("请输入拼音首字母")
         # +++ 新增：设置中药列表不可编辑（可选） +++
         self.m_tle_FormulaSelDruglistSet.setEditTriggers(QAbstractItemView.NoEditTriggers)  # 禁用直接编辑
+
+        # 药物组合表格药物列支持输入自动补全
+        self.m_tle_FormulaDrugCombSet.setEditTriggers(
+            QAbstractItemView.DoubleClicked | QAbstractItemView.SelectedClicked |
+            QAbstractItemView.EditKeyPressed
+        )
+        self.m_tle_FormulaDrugCombSet.cellClicked.connect(self.start_drug_edit)
+        self._drug_name_model = QStringListModel([], self)
+        self.m_tle_FormulaDrugCombSet.setItemDelegateForColumn(
+            1, FormulaDrugCompleterDelegate(self._drug_name_model, self.m_tle_FormulaDrugCombSet)
+        )
 
     def init_db(self):
         """初始化数据库连接"""
@@ -135,6 +165,8 @@ class MyDrugFormulasWindow(QDialog, Ui_DialogDrugSelec):
             self.m_tle_FormulaSelDruglistSet, "", ['编号', '药名', '价格'],
             sqlstr="SELECT `编号`,`药名`,`价格` FROM 中药 WHERE 中药拼音 LIKE %s"
         )
+        # 加载药物自动补全列表
+        self._drug_name_model.setStringList(self.load_drug_names())
 
     def setup_connections(self):
         # 绑定标签页切换事件
@@ -181,6 +213,25 @@ class MyDrugFormulasWindow(QDialog, Ui_DialogDrugSelec):
         self.m_bt_save.clicked.connect(self.on_save_clicked)
         self.m_bt_del.clicked.connect(self.on_delete_formula_clicked)
         self.m_bt_del_drug.clicked.connect(self.on_delete_drug_clicked)
+
+    def load_drug_names(self):
+        """读取完整中药清单，供药物列输入补全。"""
+        try:
+            if not self.conn:
+                return []
+            with self.conn.cursor() as cursor:
+                cursor.execute("SELECT 药名 FROM 中药 WHERE 药名 IS NOT NULL AND 药名 <> '' ORDER BY 药名")
+                return [str(row[0]).strip() for row in cursor.fetchall() if row and row[0]]
+        except Exception:
+            return []
+
+    def start_drug_edit(self, row, column):
+        """点击药物列时，显示中药名称自动补全下拉。"""
+        if column != 1:
+            return
+        if self.m_tle_FormulaDrugCombSet.item(row, column) is None:
+            self.m_tle_FormulaDrugCombSet.setItem(row, column, QTableWidgetItem(""))
+        self.m_tle_FormulaDrugCombSet.editItem(self.m_tle_FormulaDrugCombSet.item(row, column))
 
         # +++ 新增：处理中药列表点击事件的函数 +++
     def on_row_FormulaSelDrugListSet_click(self, item):

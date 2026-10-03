@@ -17,16 +17,32 @@ from reportlab.pdfbase.ttfonts import TTFont
 from Database_connection import load_db_config
 from preview import PreviewGenerator
 
-try:
-    pdfmetrics.registerFont(TTFont("STHeitiLight", "/System/Library/Fonts/STHeiti Light.ttc"))
-    CASE_NORMAL_FONT = "STHeitiLight"
-except Exception:
-    CASE_NORMAL_FONT = PreviewGenerator(1, 1).font_name
+# 优先使用黑体（笔画粗、清晰），回退到 PreviewGenerator 的默认字体
+import os
+import sys
+_win_font_dir = os.path.join(os.environ.get('WINDIR', r'C:\Windows'), 'Fonts')
+_case_fonts = [
+    ("SimHei", os.path.join(_win_font_dir, 'simhei.ttf')),   # Windows 黑体 - 正文字体
+    ("SimHeiBold", os.path.join(_win_font_dir, 'simhei.ttf')),  # Windows 黑体 - 粗体（复用）
+    ("Microsoft YaHei", os.path.join(_win_font_dir, 'msyh.ttc')),
+    ("Microsoft YaHei Bold", os.path.join(_win_font_dir, 'msyhbd.ttc')),
+]
 
-try:
-    pdfmetrics.registerFont(TTFont("STHeitiMedium", "/System/Library/Fonts/STHeiti Medium.ttc"))
-    CASE_BOLD_FONT = "STHeitiMedium"
-except Exception:
+CASE_NORMAL_FONT = None
+CASE_BOLD_FONT = None
+
+for name, path in _case_fonts:
+    if os.path.exists(path):
+        try:
+            pdfmetrics.registerFont(TTFont(name, path))
+            if CASE_NORMAL_FONT is None:
+                CASE_NORMAL_FONT = name
+            CASE_BOLD_FONT = name
+        except Exception:
+            pass
+
+if CASE_NORMAL_FONT is None:
+    CASE_NORMAL_FONT = PreviewGenerator(1, 1).font_name
     CASE_BOLD_FONT = CASE_NORMAL_FONT
 
 
@@ -523,7 +539,7 @@ class PrescriptionReportGenerator(CaseReportGenerator):
             self.y_position -= 0.45 * cm
             self._draw_plain_sections(c, new_page, (
                 ("临床诊断及证型", self._clinical_diagnosis_text()),
-            ), value_font_size=13, value_bold=True)
+            ), value_font_size=13, value_bold=False)
             # 临床诊断、医嘱处方及其后的内容使用同样的分隔间距。
             self.y_position -= 0.45 * cm
             self._draw_prescription_grid(c, new_page)

@@ -86,6 +86,11 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         self.current_user_id = user_id
         self._last_saved_patient_id = None
         self._active_patient_id = None
+
+        # 设置窗口图标
+        icon_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "images", "app_icon.png")
+        if os.path.exists(icon_path):
+            self.setWindowIcon(QIcon(icon_path))
         self.ensure_case_report_table()
         self.setup_case_report_ui()
 
@@ -201,7 +206,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         self.m_bt_menu_Diagnosis.clicked.connect(self.show_clinical_diag)
         self.m_bt_menu_Acup.clicked.connect(self.show_acup_setting)
         self.m_bt_menu_Patients.clicked.connect(self.show_patient_list)
-        self.m_bt_menu_Patients.setText("查看患者")
+        self.m_bt_menu_Patients.setText("患者")
         self.m_bt_menu_MedicalRec.clicked.connect(self.open_medical_record_window)
         # 移除侧边菜单底部“关于/清虚内守中医处方”入口，不再弹出说明窗口。
         self.m_bt_About.hide()
@@ -280,7 +285,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
                 existing = {row[0] for row in cursor.fetchall()}
                 for column in ("主诉", "现病史", "既往史", "过敏史", "个人史",
                                "医嘱处方", "服药方法", "禁忌", "煎服方式",
-                               "每日次数", "一次一袋"):
+                               "每日次数", "每次容量"):
                     if column not in existing:
                         cursor.execute(f"ALTER TABLE `常规资料` ADD COLUMN `{column}` TEXT NULL")
                 # 新系统支持 40 味中药；保留原有 1~20 字段，补齐 21~40。
@@ -289,6 +294,15 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
                         column = f"{prefix}{number}"
                         if column not in existing:
                             cursor.execute(f"ALTER TABLE `常规资料` ADD COLUMN `{column}` TEXT NULL")
+                # 针灸及其他疗法字段
+                acup_fields = [
+                    ("针灸次数", "TINYINT NULL"),
+                    ("针灸费用", "DECIMAL(10,2) NULL"),
+                    ("针灸或其他", "LONGTEXT NULL"),
+                ]
+                for column, dtype in acup_fields:
+                    if column not in existing:
+                        cursor.execute(f"ALTER TABLE `常规资料` ADD COLUMN `{column}` {dtype}")
             connection.commit()
         except Exception as e:
             QMessageBox.warning(self, "病例报告", f"初始化病例报告表失败：{e}")
@@ -478,6 +492,16 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         self.m_tle_Basic_Filter.setSelectionMode(QAbstractItemView.SingleSelection)
         self.m_tle_Basic_Filter.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.m_tle_Basic_Filter.setColumnHidden(0, True)
+        self.m_tle_Basic_Filter.setStyleSheet("""
+            QTableWidget::item:selected {
+                background-color: #0d47a1;
+                color: white;
+            }
+            QTableWidget::item:selected:!active {
+                background-color: #0d47a1;
+                color: white;
+            }
+        """)
         self.m_tle_Basic_Filter.setMinimumHeight(
             7 * self.m_tle_Basic_Filter.verticalHeader().defaultSectionSize() + 34
         )
@@ -557,7 +581,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         self.case_report_past_history = text_field("case_report_既往史", 84)
         self.case_report_allergy_history = text_field("case_report_过敏史", 70)
         self.case_report_personal_history = text_field("case_report_个人史", 70)
-        self.case_report_diagnosis = text_field("case_report_诊断", 70)
+        self.case_report_diagnosis = text_field("case_report_诊断", 91)
         self.case_report_prescription = text_field("case_report_医嘱处方", 119)
         # 处方摘要使用等宽字体，配合每行5味药的固定列宽显示对齐。
         prescription_font = QFont("Menlo")
@@ -565,6 +589,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         self.case_report_prescription.setFont(prescription_font)
         self.case_report_medication_method = text_field("case_report_服药方法", 72)
         self.case_report_contraindication = text_field("case_report_禁忌", 70)
+        self.case_report_contraindication.setPlainText("忌食辛辣生冷油腻、避风寒")
         self.case_report_special_note = text_field("case_report_备注", 70)
         self.case_report_special_note.setPlainText("无")
         self.case_report_prescription.setReadOnly(False)
@@ -786,8 +811,8 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
                 saved_prescription = row[7] or self.prescription_text()
                 saved_prescription = re.sub(r"[\r\n]+", "          ", str(saved_prescription)).strip()
                 self.case_report_prescription.setPlainText(saved_prescription)
-                self.case_report_medication_method.clear()
-                self.case_report_contraindication.setPlainText(row[9] or "")
+                self.case_report_medication_method.setPlainText(row[8] or "")
+                self.case_report_contraindication.setPlainText(row[9] or "忌食辛辣生冷油腻、避风寒")
                 self.case_report_special_note.setPlainText(row[10] or "无")
                 self.case_report_created_at.setText(str(row[11] or "保存后生成"))
                 self.patient_created_at_label.setText(f"创建时间：{row[11] or '未保存'}")
@@ -795,6 +820,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
                 self.case_rx_decoction.setCurrentText(str(row[13] or "煎服"))
                 self.case_rx_frequency.setCurrentText(str(row[14] or "一日二次"))
                 self.case_rx_volume.setCurrentText(str(row[15] or "一袋/150ml"))
+                self._sync_case_report_usage_display()
             else:
                 self.clear_case_report(patient_id)
         except Exception as e:
@@ -815,6 +841,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
                      self.case_report_medication_method, self.case_report_contraindication,
                      self.case_report_special_note):
             edit.clear()
+        self.case_report_contraindication.setPlainText("忌食辛辣生冷油腻、避风寒")
         self.case_report_special_note.setPlainText("无")
         self.case_rx_doses.setCurrentText("15")
         self.case_rx_decoction.setCurrentText("煎服")
@@ -2391,7 +2418,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
                 with connection.cursor() as cursor:
                     # 构建 SQL
                     sql = """
-                     SELECT `用法` FROM 用法 """
+                     SELECT `用法` FROM 用法 WHERE `用法` IS NOT NULL AND TRIM(`用法`) != '' """
                     # 执行查询（注意参数格式）
                     cursor.execute(sql)
 
@@ -2399,12 +2426,12 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
                     connection.commit()
 
                     if not results:
-                        # 插入一个空行
                         return
                     else:
-                        # 正常插入数据
-                        for row_idx, row_data in enumerate(results):
-                            self.m_cbUseage.insertItems(row_idx, row_data)
+                        # 正常插入数据：过滤掉空值，转为字符串列表
+                        usage_items = [str(row[0]) for row in results if row[0] and str(row[0]).strip()]
+                        if usage_items:
+                            self.m_cbUseage.addItems(usage_items)
 
             except Exception as e:
                 QMessageBox.warning(self, "查询错误", f"搜索失败: {str(e)}")

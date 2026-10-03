@@ -531,7 +531,7 @@ class PatientViewerWindow(QDialog):
 
         self.table = QTableWidget(self)
         self.headers = ["ID主键号", "病例号", "姓名", "性别", "年龄", "住址", "创建时间",
-                        "查看病例详情", "复诊", "查看病例报告", "查看处方报告", "删除"]
+                        "病例详情", "复诊", "病例报告", "处方报告", "删除"]
         self.table.setColumnCount(len(self.headers))
         self.table.setHorizontalHeaderLabels(self.headers)
         self.table.setSelectionBehavior(QTableWidget.SelectRows)
@@ -575,13 +575,13 @@ class PatientViewerWindow(QDialog):
                         item.setData(Qt.UserRole, patient_id)
                     self.table.setItem(row, col, item)
 
-                self._add_action_button(row, 7, "查看病例详情",
+                self._add_action_button(row, 7, "病例详情",
                                         lambda checked=False, pid=patient_id: self.open_detail(pid))
                 self._add_action_button(row, 8, "复诊",
                                         lambda checked=False, pid=patient_id: self.open_followup(pid))
-                self._add_action_button(row, 9, "查看病例报告",
+                self._add_action_button(row, 9, "病例报告",
                                         lambda checked=False, pid=patient_id: self.open_report(pid, False))
-                self._add_action_button(row, 10, "查看处方报告",
+                self._add_action_button(row, 10, "处方报告",
                                         lambda checked=False, pid=patient_id: self.open_report(pid, True))
                 self._add_action_button(row, 11, "删除",
                                         lambda checked=False, pid=patient_id: self.delete_patient(pid))
@@ -590,6 +590,12 @@ class PatientViewerWindow(QDialog):
 
     def _add_action_button(self, row, col, text, slot):
         button = QPushButton(text, self.table)
+        button.setStyleSheet(
+            "QPushButton { background: #1976d2; color: white; padding: 4px 12px; "
+            "border: 1px solid #125aa0; border-radius: 4px; }"
+            "QPushButton:hover { background: #1565c0; }"
+            "QPushButton:pressed { background: #0d47a1; }"
+        )
         button.clicked.connect(slot)
         self.table.setCellWidget(row, col, button)
 

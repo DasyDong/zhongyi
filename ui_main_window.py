@@ -1821,7 +1821,7 @@ class Ui_MainWindow(object):
     # setupUi
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"\u6e05\u865a\u5185\u5b88\u4e2d\u533b\u5904\u65b9", None))
+        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"建华卫生所中医处方", None))
         self.on_action_jingyanxuanfang.setText(QCoreApplication.translate("MainWindow", u"\u7ecf\u9a8c\u9009\u65b9\u8bbe\u7f6e", None))
         self.on_action_bianbingxuanfang.setText(QCoreApplication.translate("MainWindow", u"\u8fa8\u75c5\u9009\u65b9\u8bbe\u7f6e", None))
         self.on_action_fangjixuanfang.setText(QCoreApplication.translate("MainWindow", u"\u65b9\u5242\u9009\u65b9\u8bbe\u7f6e", None))

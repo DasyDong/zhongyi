@@ -11,28 +11,59 @@ from reportlab.platypus.para import Paragraph
 from Database_connection import load_db_config
 
 # ================== 字体注册配置 ==================
+import os
+import sys
+
+def _get_system_font_paths():
+    """获取各平台系统字体目录"""
+    if sys.platform == 'win32':
+        windir = os.environ.get('WINDIR', r'C:\Windows')
+        return [os.path.join(windir, 'Fonts')]
+    elif sys.platform == 'darwin':
+        return ['/System/Library/Fonts', '/Library/Fonts']
+    else:
+        return ['/usr/share/fonts', '/usr/local/share/fonts']
+
+SYSTEM_FONT_DIRS = _get_system_font_paths()
+
+def _find_font_file(filename):
+    """在系统字体目录和当前目录中查找字体文件"""
+    # 先在当前目录找
+    if os.path.exists(filename):
+        return filename
+    # 再在系统字体目录找
+    for d in SYSTEM_FONT_DIRS:
+        fullpath = os.path.join(d, filename)
+        if os.path.exists(fullpath):
+            return fullpath
+    return None
+
 FONT_DEFINITIONS = [
-    {'name': 'Microsoft YaHei', 'path': 'msyh.ttf'},  # 微软雅黑
-    {'name': 'STSong', 'path': 'STSONG.TTF'},         # 宋体
-    {'name': 'SimHei', 'path': 'simhei.ttf'},         # 黑体
-    {'name': 'FangSong', 'path': 'simfang.ttf'},      # 仿宋
-    {'name': 'KaiTi', 'path': 'simkai.ttf'},          # 楷体
-    {'name': 'Songti', 'path': '/System/Library/Fonts/Supplemental/Songti.ttc'},
-    {'name': 'STHeiti', 'path': '/System/Library/Fonts/STHeiti Medium.ttc'},
+    {'name': 'SimHei', 'filename': 'simhei.ttf'},         # 黑体（笔画最粗，打印清晰）
+    {'name': 'Microsoft YaHei', 'filename': 'msyh.ttc'},  # 微软雅黑
+    {'name': 'Microsoft YaHei Bold', 'filename': 'msyhbd.ttc'},  # 微软雅黑粗体
+    {'name': 'STSong', 'filename': 'STSONG.TTF'},         # 宋体
+    {'name': 'FangSong', 'filename': 'simfang.ttf'},      # 仿宋
+    {'name': 'KaiTi', 'filename': 'simkai.ttf'},          # 楷体
+    {'name': 'STHeiti', 'filename': 'STHeiti Medium.ttc'},  # Mac 黑体
 ]
 
 # 尝试注册字体，选择第一个可用的
 registered_font_name = None
 for font in FONT_DEFINITIONS:
-    try:
-        pdfmetrics.registerFont(TTFont(font['name'], font['path']))
-        registered_font_name = font['name']
-        break
-    except Exception as e:
-        print(f"字体注册失败 {font['name']}: {str(e)}")
+    font_path = _find_font_file(font['filename'])
+    if font_path:
+        try:
+            pdfmetrics.registerFont(TTFont(font['name'], font_path))
+            registered_font_name = font['name']
+            print(f"已注册字体: {font['name']} ({font_path})")
+            break
+        except Exception as e:
+            print(f"字体注册失败 {font['name']}: {str(e)}")
 
 if not registered_font_name:
     registered_font_name = 'Helvetica'
+    print("警告: 未找到任何中文字体，将使用 Helvetica（中文可能显示异常）")
 
 
 class myReporter(object):

@@ -41,10 +41,10 @@ class Ui_Login_Dialog(object):
         self.Backgroup_img.setMaximumSize(QSize(1280, 720))
         self.Backgroup_img.setFont(font)
         self.Backgroup_img.setStyleSheet(u"#Backgroup_img {\n"
-"             background-image: url(:/Resources/images/login.jpg);\n"
-"             background-position: center;\n"
+"             background-image: url(images/login_bg.png);\n"
+"             background-position: top center;\n"
 "             background-repeat: no-repeat;\n"
-"             background-clip: content;  /* \u9650\u5236\u80cc\u666f\u7ed8\u5236\u8303\u56f4 */\n"
+"             background-color: #e0e0e0;\n"
 "         }")
         self.gridLayout = QGridLayout(self.Backgroup_img)
         self.gridLayout.setObjectName(u"gridLayout")
