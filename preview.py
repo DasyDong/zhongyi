@@ -49,7 +49,9 @@ class PreviewGenerator:
         self.line_height = 0.8 * cm
         self.data = None
         self.withoutdiagprint = False
-        self.footer_height = 3 * cm  # 预估页脚高度
+        # 页脚实际只有一到两行（主治医师及诊所联系方式），避免预留过大
+        # 导致病例报告的禁忌、备注被提前挤到第二页。
+        self.footer_height = 0.5 * cm
         self.font_name = registered_font_name  # 使用注册的字体名称
 
     def add_newlines_by_width(self, text, max_width, font_name, font_size, canvas):

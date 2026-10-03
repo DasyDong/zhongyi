@@ -203,7 +203,8 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         self.m_bt_menu_Patients.clicked.connect(self.show_patient_list)
         self.m_bt_menu_Patients.setText("查看患者")
         self.m_bt_menu_MedicalRec.clicked.connect(self.open_medical_record_window)
-        self.m_bt_About.clicked.connect(self.show_about)
+        # 移除侧边菜单底部“关于/清虚内守中医处方”入口，不再弹出说明窗口。
+        self.m_bt_About.hide()
         self.m_pbPreview.clicked.connect(self.handle_preview_click)
 
         currentdate = QDate.currentDate()
@@ -278,7 +279,8 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
                 cursor.execute("SHOW COLUMNS FROM `常规资料`")
                 existing = {row[0] for row in cursor.fetchall()}
                 for column in ("主诉", "现病史", "既往史", "过敏史", "个人史",
-                               "医嘱处方", "服药方法", "禁忌"):
+                               "医嘱处方", "服药方法", "禁忌", "煎服方式",
+                               "每日次数", "一次一袋"):
                     if column not in existing:
                         cursor.execute(f"ALTER TABLE `常规资料` ADD COLUMN `{column}` TEXT NULL")
                 # 新系统支持 40 味中药；保留原有 1~20 字段，补齐 21~40。
@@ -521,6 +523,8 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         """)
         report_layout = QtWidgets.QFormLayout(report_panel)
         report_layout.setLabelAlignment(Qt.AlignRight | Qt.AlignTop)
+        # 保持输入框横向铺满中间区域；各输入框自身设置不同高度上限，
+        # 避免切换患者后被表单布局垂直拉伸。
         report_layout.setFieldGrowthPolicy(QtWidgets.QFormLayout.AllNonFixedFieldsGrow)
 
         self.case_report_id = QtWidgets.QLabel("新建")
@@ -540,26 +544,76 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
             edit = QtWidgets.QTextEdit(report_panel)
             edit.setObjectName(name)
             edit.setMinimumHeight(height)
+            edit.setMaximumHeight(height)
+            edit.setSizePolicy(
+                QtWidgets.QSizePolicy.Expanding,
+                QtWidgets.QSizePolicy.Preferred,
+            )
             edit.setPlaceholderText("请输入" + name.replace("case_report_", "") + "…")
             return edit
 
-        self.case_report_chief_complaint = text_field("case_report_主诉", 72)
-        self.case_report_present_history = text_field("case_report_现病史", 105)
-        self.case_report_past_history = text_field("case_report_既往史", 90)
-        self.case_report_allergy_history = text_field("case_report_过敏史", 72)
-        self.case_report_personal_history = text_field("case_report_个人史", 72)
-        self.case_report_diagnosis = text_field("case_report_诊断", 72)
-        self.case_report_prescription = text_field("case_report_医嘱处方", 120)
+        self.case_report_chief_complaint = text_field("case_report_主诉", 70)
+        self.case_report_present_history = text_field("case_report_现病史", 98)
+        self.case_report_past_history = text_field("case_report_既往史", 84)
+        self.case_report_allergy_history = text_field("case_report_过敏史", 70)
+        self.case_report_personal_history = text_field("case_report_个人史", 70)
+        self.case_report_diagnosis = text_field("case_report_诊断", 70)
+        self.case_report_prescription = text_field("case_report_医嘱处方", 119)
         # 处方摘要使用等宽字体，配合每行5味药的固定列宽显示对齐。
         prescription_font = QFont("Menlo")
         prescription_font.setPointSize(11)
         self.case_report_prescription.setFont(prescription_font)
         self.case_report_medication_method = text_field("case_report_服药方法", 72)
-        self.case_report_contraindication = text_field("case_report_禁忌", 72)
-        self.case_report_special_note = text_field("case_report_备注", 72)
+        self.case_report_contraindication = text_field("case_report_禁忌", 70)
+        self.case_report_special_note = text_field("case_report_备注", 70)
         self.case_report_special_note.setPlainText("无")
         self.case_report_prescription.setReadOnly(False)
         self.case_report_prescription.setPlaceholderText("可直接修改中药处方，药物之间至少用十个空格分隔…")
+        # 处方用法字段：与患者资料共用常规资料表保存，重新打开/复诊时准确回填。
+        self.case_rx_doses = QtWidgets.QComboBox(self.groupBox_1)
+        self.case_rx_doses.setObjectName("case_rx_doses")
+        self.case_rx_doses.addItems([str(i) for i in range(1, 41)])
+        self.case_rx_doses.setCurrentText("15")
+        self.case_rx_decoction = QtWidgets.QComboBox(self.groupBox_1)
+        self.case_rx_decoction.setObjectName("case_rx_decoction")
+        self.case_rx_decoction.addItems(["煎服"])
+        self.case_rx_frequency = QtWidgets.QComboBox(self.groupBox_1)
+        self.case_rx_frequency.setObjectName("case_rx_frequency")
+        self.case_rx_frequency.addItems(["一日一次", "一日二次", "一日三次"])
+        self.case_rx_frequency.setCurrentText("一日二次")
+        self.case_rx_volume = QtWidgets.QComboBox(self.groupBox_1)
+        self.case_rx_volume.setObjectName("case_rx_volume")
+        self.case_rx_volume.addItems(["一袋/150ml", "一袋/200ml", "一袋/100ml", "一袋/250ml"])
+        self.case_rx_volume.setCurrentText("一袋/150ml")
+        for control in (self.case_rx_doses, self.case_rx_decoction,
+                        self.case_rx_frequency, self.case_rx_volume):
+            control.currentTextChanged.connect(self._sync_case_report_usage_display)
+            control.currentTextChanged.connect(self._sync_extended_prescription_note)
+        self.case_report_usage_summary = QtWidgets.QLabel(self.groupBox_2)
+        self.case_report_usage_summary.setObjectName("case_report_usage_summary")
+        self.case_report_usage_summary.setWordWrap(True)
+        self.case_report_usage_summary.setStyleSheet(
+            "color: #202020; font-weight: normal; padding: 4px;"
+        )
+        rx_usage_row_1 = QtWidgets.QHBoxLayout()
+        rx_usage_row_1.addWidget(QtWidgets.QLabel("剂数"))
+        rx_usage_row_1.addWidget(self.case_rx_doses)
+        rx_usage_row_1.addWidget(QtWidgets.QLabel("煎服"))
+        rx_usage_row_1.addWidget(self.case_rx_decoction)
+
+        rx_usage_row_2 = QtWidgets.QHBoxLayout()
+        rx_usage_row_2.addWidget(QtWidgets.QLabel("频次"))
+        rx_usage_row_2.addWidget(self.case_rx_frequency)
+        rx_usage_row_2.addWidget(QtWidgets.QLabel("每次容量"))
+        rx_usage_row_2.addWidget(self.case_rx_volume)
+
+        rx_usage_layout = QtWidgets.QVBoxLayout()
+        rx_usage_layout.setContentsMargins(0, 0, 0, 0)
+        rx_usage_layout.setSpacing(4)
+        rx_usage_layout.addLayout(rx_usage_row_1)
+        rx_usage_layout.addLayout(rx_usage_row_2)
+        self.case_rx_usage_widget = QtWidgets.QWidget(self.groupBox_1)
+        self.case_rx_usage_widget.setLayout(rx_usage_layout)
         self.m_tbl_DrugUsage.itemChanged.connect(self._sync_case_report_prescription_from_table)
         report_layout.addRow("主诉", self.case_report_chief_complaint)
         report_layout.addRow("现病史", self.case_report_present_history)
@@ -568,7 +622,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         report_layout.addRow("个人史", self.case_report_personal_history)
         report_layout.addRow("诊断", self.case_report_diagnosis)
         report_layout.addRow("医嘱处方(单位克)", self.case_report_prescription)
-        report_layout.addRow("服药方法", self.case_report_medication_method)
+        report_layout.addRow("煎服用法", self.case_report_usage_summary)
         report_layout.addRow("禁忌", self.case_report_contraindication)
         report_layout.addRow("备注", self.case_report_special_note)
 
@@ -599,6 +653,8 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         drug_index = self.verticalLayout_2.indexOf(self.m_tbl_DrugUsage)
         self.verticalLayout_2.insertWidget(drug_index, self.case_report_select_drug)
         self.verticalLayout_2.insertWidget(drug_index + 1, self.m_bt_DeleteDrug)
+        self.verticalLayout_2.insertWidget(drug_index + 2, self.case_rx_usage_widget)
+        self.case_report_medication_method.hide()
 
     def load_drug_names(self):
         """读取中药清单，供主界面药物列输入补全使用。"""
@@ -713,7 +769,8 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
             with connection.cursor() as cursor:
                 cursor.execute("""
                     SELECT 编号, 主诉, 现病史, 既往史, 过敏史, 个人史, 诊断,
-                           医嘱处方, 服药方法, 禁忌, 备注, 日期时间
+                           医嘱处方, 服药方法, 禁忌, 备注, 日期时间,
+                           剂数, 煎服方式, 每日次数, 每次容量
                     FROM 常规资料 WHERE 编号=%s
                 """, (patient_id,))
                 row = cursor.fetchone()
@@ -729,11 +786,15 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
                 saved_prescription = row[7] or self.prescription_text()
                 saved_prescription = re.sub(r"[\r\n]+", "          ", str(saved_prescription)).strip()
                 self.case_report_prescription.setPlainText(saved_prescription)
-                self.case_report_medication_method.setPlainText(row[8] or "")
+                self.case_report_medication_method.clear()
                 self.case_report_contraindication.setPlainText(row[9] or "")
                 self.case_report_special_note.setPlainText(row[10] or "无")
                 self.case_report_created_at.setText(str(row[11] or "保存后生成"))
                 self.patient_created_at_label.setText(f"创建时间：{row[11] or '未保存'}")
+                self.case_rx_doses.setCurrentText(str(row[12] or "15"))
+                self.case_rx_decoction.setCurrentText(str(row[13] or "煎服"))
+                self.case_rx_frequency.setCurrentText(str(row[14] or "一日二次"))
+                self.case_rx_volume.setCurrentText(str(row[15] or "一袋/150ml"))
             else:
                 self.clear_case_report(patient_id)
         except Exception as e:
@@ -755,9 +816,42 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
                      self.case_report_special_note):
             edit.clear()
         self.case_report_special_note.setPlainText("无")
+        self.case_rx_doses.setCurrentText("15")
+        self.case_rx_decoction.setCurrentText("煎服")
+        self.case_rx_frequency.setCurrentText("一日二次")
+        self.case_rx_volume.setCurrentText("一袋/150ml")
+        self._sync_case_report_usage_display()
+        self._sync_extended_prescription_note()
         diagnosis_item = self.m_tle_PatientInfo.item(4, 1)
         self.case_report_diagnosis.setPlainText(
             diagnosis_item.text() if diagnosis_item and diagnosis_item.text() else ""
+        )
+
+    def _sync_extended_prescription_note(self):
+        """剂数超过15剂时，在备注中保留延长用量时间原因提示。"""
+        if not hasattr(self, "case_report_special_note"):
+            return
+        try:
+            doses = int(self.case_rx_doses.currentText().strip())
+        except (AttributeError, ValueError):
+            return
+        marker = "1 延长处方用量时间原因：慢性病"
+        note = self.case_report_special_note.toPlainText().strip()
+        if doses > 15 and marker not in note:
+            if not note or note == "无":
+                self.case_report_special_note.setPlainText(marker)
+            else:
+                self.case_report_special_note.setPlainText(note + "\n" + marker)
+
+    def _sync_case_report_usage_display(self):
+        """同步中间病例报告输入区的处方用法显示。"""
+        if not hasattr(self, "case_report_usage_summary"):
+            return
+        self.case_report_usage_summary.setText(
+            f"剂数：{self.case_rx_doses.currentText()}剂    "
+            f"煎服：{self.case_rx_decoction.currentText()}    "
+            f"频次：{self.case_rx_frequency.currentText()}    "
+            f"每次容量：{self.case_rx_volume.currentText()}"
         )
 
     def get_max_case_number(self):
@@ -1410,13 +1504,15 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
 
     def _save_case_report_fields_cursor(self, cursor, patient_id):
         """使用患者资料保存事务中的同一个游标写入病例报告字段。"""
+        self._sync_extended_prescription_note()
         prescription = self.normalized_prescription_text() or self.prescription_text()
         self.case_report_prescription.setPlainText(prescription)
         cursor.execute("""
             UPDATE `常规资料` SET
             `主诉`=%s, `现病史`=%s, `既往史`=%s, `过敏史`=%s,
             `个人史`=%s, `诊断`=%s, `医嘱处方`=%s,
-            `服药方法`=%s, `禁忌`=%s, `备注`=%s
+            `禁忌`=%s, `备注`=%s, `剂数`=%s, `煎服方式`=%s,
+            `每日次数`=%s, `每次容量`=%s
             WHERE `编号`=%s
         """, (
             self.case_report_chief_complaint.toPlainText().strip(),
@@ -1426,9 +1522,12 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
             self.case_report_personal_history.toPlainText().strip(),
             self.case_report_diagnosis.toPlainText().strip(),
             prescription,
-            self.case_report_medication_method.toPlainText().strip(),
             self.case_report_contraindication.toPlainText().strip(),
             self.case_report_special_note.toPlainText().strip() or "无",
+            self.case_rx_doses.currentText(),
+            self.case_rx_decoction.currentText(),
+            self.case_rx_frequency.currentText(),
+            self.case_rx_volume.currentText(),
             patient_id,
         ))
 

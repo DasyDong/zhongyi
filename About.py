@@ -9,7 +9,7 @@ from PySide6.QtGui import QFont
 class AboutDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setWindowTitle("关于 清虚内守中医处方")
+        self.setWindowTitle("关于 中医处方")
         self.resize(800, 600)
 
         # 创建基础字体

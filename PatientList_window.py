@@ -518,11 +518,20 @@ class PatientViewerWindow(QDialog):
         self.search_edit = QLineEdit(self)
         self.search_edit.setPlaceholderText("输入病例号、姓名、性别、年龄、住址查询")
         toolbar.addWidget(self.search_edit)
+        toolbar.addStretch()
+        self.new_patient_button = QPushButton("新增患者", self)
+        self.new_patient_button.setObjectName("primarySaveButton")
+        self.new_patient_button.setStyleSheet(
+            "QPushButton { background: #1976d2; color: white; padding: 6px 16px; "
+            "border: 1px solid #125aa0; border-radius: 4px; }"
+            "QPushButton:hover { background: #1565c0; }"
+        )
+        toolbar.addWidget(self.new_patient_button)
         layout.addLayout(toolbar)
 
         self.table = QTableWidget(self)
-        self.headers = ["病例号", "姓名", "性别", "年龄", "住址", "创建时间",
-                        "查看病例详情", "查看病例报告", "查看处方报告", "删除"]
+        self.headers = ["ID主键号", "病例号", "姓名", "性别", "年龄", "住址", "创建时间",
+                        "查看病例详情", "复诊", "查看病例报告", "查看处方报告", "删除"]
         self.table.setColumnCount(len(self.headers))
         self.table.setHorizontalHeaderLabels(self.headers)
         self.table.setSelectionBehavior(QTableWidget.SelectRows)
@@ -533,6 +542,7 @@ class PatientViewerWindow(QDialog):
         layout.addWidget(self.table)
 
         self.search_edit.textChanged.connect(self.filter_rows)
+        self.new_patient_button.clicked.connect(self.open_new_patient)
         self.init_db()
         self.load_data()
 
@@ -557,21 +567,23 @@ class PatientViewerWindow(QDialog):
             for patient_id, case_number, name, gender, age, address, created_at in rows:
                 row = self.table.rowCount()
                 self.table.insertRow(row)
-                values = [case_number, name, gender, age, address, created_at]
+                values = [patient_id, case_number, name, gender, age, address, created_at]
                 for col, value in enumerate(values):
                     item = QTableWidgetItem("" if value is None else str(value))
                     if col == 0:
-                        # 表格显示病例号，删除操作仍使用数据库主键编号。
+                        # 第一列直接显示数据库主键，所有操作仍使用该主键。
                         item.setData(Qt.UserRole, patient_id)
                     self.table.setItem(row, col, item)
 
-                self._add_action_button(row, 6, "查看病例详情",
+                self._add_action_button(row, 7, "查看病例详情",
                                         lambda checked=False, pid=patient_id: self.open_detail(pid))
-                self._add_action_button(row, 7, "查看病例报告",
+                self._add_action_button(row, 8, "复诊",
+                                        lambda checked=False, pid=patient_id: self.open_followup(pid))
+                self._add_action_button(row, 9, "查看病例报告",
                                         lambda checked=False, pid=patient_id: self.open_report(pid, False))
-                self._add_action_button(row, 8, "查看处方报告",
+                self._add_action_button(row, 10, "查看处方报告",
                                         lambda checked=False, pid=patient_id: self.open_report(pid, True))
-                self._add_action_button(row, 9, "删除",
+                self._add_action_button(row, 11, "删除",
                                         lambda checked=False, pid=patient_id: self.delete_patient(pid))
         except Exception as e:
             QMessageBox.warning(self, "错误", f"患者列表加载失败：{e}")
@@ -585,7 +597,7 @@ class PatientViewerWindow(QDialog):
         keyword = text.strip().lower()
         for row in range(self.table.rowCount()):
             matched = not keyword
-            for col in range(6):
+            for col in range(7):
                 item = self.table.item(row, col)
                 if item and keyword in item.text().lower():
                     matched = True
@@ -595,19 +607,92 @@ class PatientViewerWindow(QDialog):
     def open_detail(self, patient_id):
         """打开与主界面一致的完整患者详情，并填充全部字段。"""
         try:
-            from main_window_system import MyMainWindow
-            window = MyMainWindow(self.parent().current_user_id)
-            window._active_patient_id = str(patient_id)
-            for row in range(window.m_tle_Basic_Filter.rowCount()):
-                item = window.m_tle_Basic_Filter.item(row, 0)
-                if item and item.text() == str(patient_id):
-                    window.on_row_basic_filter_click(item)
-                    break
-            window.showMaximized()
-            self.detail_windows.append(window)
-            self.hide()
+            self._open_patient_window(patient_id)
         except Exception as e:
             QMessageBox.critical(self, "病例详情", f"打开病例详情失败：{e}")
+
+    def _open_patient_window(self, patient_id=None):
+        """复用原主界面；传入患者编号时先完整载入该患者资料。"""
+        from main_window_system import MyMainWindow
+
+        parent_window = self.parent()
+        reuse_parent = isinstance(parent_window, MyMainWindow)
+        window = parent_window if reuse_parent else MyMainWindow(parent_window.current_user_id)
+        if patient_id is not None:
+            patient_id = str(patient_id)
+            window._active_patient_id = patient_id
+
+            # 不依赖新窗口列表的加载时机，直接按数据库主键加载完整患者资料。
+            data = window.m_databaseUtil.query_database_info(
+                """SELECT 姓名,性别,年龄,病证,诊断,血压,住址,电话,病历号,身份证号
+                   FROM 常规资料 WHERE 编号 = %s""",
+                patient_id,
+            )
+            if data is None:
+                raise ValueError(f"未找到编号为 {patient_id} 的患者记录")
+            window.display_patient_info(data)
+            window.query_and_fill_data(patient_id)
+            window.load_case_report(patient_id)
+
+            # 同步主界面左侧查询表格的当前行，保证保存、复诊等操作使用该患者。
+            for row in range(window.m_tle_Basic_Filter.rowCount()):
+                item = window.m_tle_Basic_Filter.item(row, 0)
+                if item and item.text().strip() == patient_id:
+                    window.m_tle_Basic_Filter.setCurrentCell(row, 1)
+                    window.m_tle_Basic_Filter.selectRow(row)
+                    break
+        window.showMaximized()
+        if reuse_parent:
+            # 本窗口由 exec() 打开，必须结束弹窗事件循环，否则原主窗口仍被模态阻塞。
+            self.accept()
+        else:
+            self.detail_windows.append(window)
+            self.hide()
+        if patient_id is not None and not reuse_parent:
+            # MyMainWindow 构造函数会默认选中查询列表第一行。延迟到事件循环
+            # 完成后再次回填，避免默认行覆盖从“查看患者”传入的目标患者。
+            QTimer.singleShot(
+                0,
+                lambda w=window, pid=str(patient_id):
+                    self._force_patient_selection(w, pid),
+            )
+        return window
+
+    def _force_patient_selection(self, window, patient_id):
+        """在主界面完成显示后，强制保持查看患者传入的患者。"""
+        try:
+            item = None
+            for row in range(window.m_tle_Basic_Filter.rowCount()):
+                candidate = window.m_tle_Basic_Filter.item(row, 0)
+                if candidate and candidate.text().strip() == str(patient_id):
+                    item = candidate
+                    window.m_tle_Basic_Filter.setCurrentCell(row, 1)
+                    window.m_tle_Basic_Filter.selectRow(row)
+                    break
+            if item is None:
+                raise ValueError(f"病例查询列表中未找到患者编号 {patient_id}")
+
+            # 显式调用原有加载函数，确保基础资料、处方和病例报告全部以
+            # 当前点击的患者为准，而不是依赖表格信号的触发顺序。
+            window.on_row_basic_filter_click(item)
+        except Exception as e:
+            QMessageBox.critical(self, "病例详情", f"加载当前患者失败：{e}")
+
+    def open_new_patient(self):
+        """新增患者：复用主界面原有的初诊逻辑。"""
+        try:
+            window = self._open_patient_window()
+            window.handle_firstvisit_click()
+        except Exception as e:
+            QMessageBox.critical(self, "新增患者", f"打开新增患者界面失败：{e}")
+
+    def open_followup(self, patient_id):
+        """复诊：先载入原患者全部资料，再复用主界面原有复诊逻辑。"""
+        try:
+            window = self._open_patient_window(patient_id)
+            window.handle_secondvisit_click()
+        except Exception as e:
+            QMessageBox.critical(self, "复诊", f"打开复诊界面失败：{e}")
 
     def open_report(self, patient_id, prescription_only):
         try:

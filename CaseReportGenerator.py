@@ -47,7 +47,7 @@ class CaseReportGenerator(PreviewGenerator):
                 cursor.execute(
                     """
                     SELECT 编号, 主诉, 现病史, 既往史, 过敏史, 个人史,
-                           诊断, 医嘱处方, 服药方法, 禁忌, 日期时间
+                           诊断, 医嘱处方, 服药方法, 禁忌, 备注, 日期时间
                     FROM 常规资料
                     WHERE 编号=%s
                     """,
@@ -60,6 +60,17 @@ class CaseReportGenerator(PreviewGenerator):
         if self.case_report.get("诊断"):
             data["诊断"] = self.case_report["诊断"]
         return data
+
+    def _prescription_usage_text(self):
+        """生成处方下方的剂数和煎服用法说明。"""
+        doses = str(self.data.get("剂数") or "15").strip()
+        decoction = str(self.data.get("煎服方式") or "煎服").strip()
+        frequency = str(self.data.get("每日次数") or "一日二次").strip()
+        volume = str(self.data.get("每次容量") or "一袋/150ml").strip()
+        return (
+            f"剂数：{doses}剂    煎服：{decoction}    "
+            f"频次：{frequency}    每次容量：{volume}"
+        )
 
     def _draw_page_header(self, c):
         """病例报告页眉：采用处方报告的合并标题和三行患者信息布局。"""
@@ -243,7 +254,7 @@ class CaseReportGenerator(PreviewGenerator):
             ("诊断：", self.case_report.get("诊断", self.data.get("诊断", ""))),
         )
         fields_after_prescription = (
-            ("服药方法：", self.case_report.get("服药方法", "")),
+            ("煎服用法：", self._prescription_usage_text()),
             ("禁忌：", self.case_report.get("禁忌", "无")),
             ("备注：", self.case_report.get("备注", "无")),
         )
@@ -265,7 +276,7 @@ class CaseReportGenerator(PreviewGenerator):
             ("个人史：", self.case_report.get("个人史", "")),
             ("诊断：", self.case_report.get("诊断", self.data.get("诊断", ""))),
             ("医嘱处方(单位克)：", self._report_prescription()),
-            ("服药方法：", self.case_report.get("服药方法", "")),
+            ("煎服用法：", self._prescription_usage_text()),
             ("禁忌：", self.case_report.get("禁忌", "无")),
             ("备注：", self.case_report.get("备注", "无")),
         )
@@ -504,7 +515,6 @@ class PrescriptionReportGenerator(CaseReportGenerator):
         self.case_report = {
             "诊断": original.get("诊断", self.data.get("诊断", "")),
             "医嘱处方": original.get("医嘱处方", ""),
-            "服药方法": original.get("服药方法", ""),
             "禁忌": original.get("禁忌", "无"),
             "备注": original.get("备注", "无"),
         }
@@ -519,7 +529,7 @@ class PrescriptionReportGenerator(CaseReportGenerator):
             self._draw_prescription_grid(c, new_page)
             self.y_position -= 0.45 * cm
             self._draw_plain_sections(c, new_page, (
-                ("服药方法", self.case_report.get("服药方法", "")),
+                ("煎服用法", self._prescription_usage_text()),
                 ("禁忌事项", self.case_report.get("禁忌", "无")),
                 ("备注", self.case_report.get("备注", "无")),
             ))
@@ -531,18 +541,17 @@ class PrescriptionReportGenerator(CaseReportGenerator):
         self.case_report = {
             "诊断": original.get("诊断", self.data.get("诊断", "")),
             "医嘱处方": original.get("医嘱处方", ""),
-            "服药方法": original.get("服药方法", ""),
             "禁忌": original.get("禁忌", "无"),
             "备注": original.get("备注", "无"),
         }
         try:
-            # 只绘制诊断、医嘱处方、服药方法、禁忌，不显示病例叙述字段。
+            # 只绘制诊断、医嘱处方、煎服用法、禁忌，不显示病例叙述字段。
             min_y = self.margin + self.footer_height
             content_width = self.page_width - 4 * cm
             fields = (
                 ("临床诊断及证型", self._clinical_diagnosis_text()),
                 ("医嘱处方", self._report_prescription()),
-                ("服药方法", self.case_report.get("服药方法", "")),
+                ("煎服用法", self._prescription_usage_text()),
                 ("禁忌事项", self.case_report.get("禁忌", "无")),
                 ("备注", self.case_report.get("备注", "无")),
             )
