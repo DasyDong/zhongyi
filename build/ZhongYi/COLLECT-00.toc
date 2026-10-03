@@ -1054,7 +1054,6 @@
    'EXTENSION'),
   ('images\\app_icon.ico', 'D:\\code\\zhongyi\\images\\app_icon.ico', 'DATA'),
   ('images\\app_icon.png', 'D:\\code\\zhongyi\\images\\app_icon.png', 'DATA'),
-  ('images\\login_bg.jpg', 'D:\\code\\zhongyi\\images\\login_bg.jpg', 'DATA'),
   ('images\\login_bg.png', 'D:\\code\\zhongyi\\images\\login_bg.png', 'DATA'),
   ('libcrypto-1_1.dll',
    'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
@@ -1360,6 +1359,10 @@
    'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
    'CN\\ModularData\\ai-agent\\vm\\tools\\python\\python310.dll',
    'BINARY'),
+  ('pywin32_system32\\pywintypes310.dll',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\pywin32_system32\\pywintypes310.dll',
+   'BINARY'),
   ('select.pyd',
    'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
    'CN\\ModularData\\ai-agent\\vm\\tools\\python\\select.pyd',
@@ -1401,6 +1404,22 @@
   ('unicodedata.pyd',
    'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
    'CN\\ModularData\\ai-agent\\vm\\tools\\python\\unicodedata.pyd',
+   'EXTENSION'),
+  ('win32\\win32api.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\win32\\win32api.pyd',
+   'EXTENSION'),
+  ('win32\\win32evtlog.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\win32\\win32evtlog.pyd',
+   'EXTENSION'),
+  ('win32\\win32pdh.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\win32\\win32pdh.pyd',
+   'EXTENSION'),
+  ('win32\\win32print.pyd',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\win32\\win32print.pyd',
    'EXTENSION'),
   ('yaml\\_yaml.cp310-win_amd64.pyd',
    'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '

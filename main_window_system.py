@@ -262,7 +262,12 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         self.m_tle_Diagnosis.currentCellChanged.connect(self.handle_Diagnosis_cell_changed)
 
         self.m_tbl_DrugUsage.setColumnHidden(0, True)
-        self.m_tbl_DrugUsage.setMinimumHeight(450)  # 中药治疗表格最小高度，显示更多行
+        self.m_tbl_DrugUsage.setMinimumHeight(300)  # 中药治疗表格最小高度
+        self.m_tbl_DrugUsage.setSizePolicy(
+            QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Expanding,
+        )
+        self.m_tbl_DrugUsage.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.m_tbl_DrugUsage.setRowCount(40)
         for row in range(40):
             for column in range(4):
@@ -656,7 +661,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         report_layout.addRow("过敏史", self.case_report_allergy_history)
         report_layout.addRow("个人史", self.case_report_personal_history)
         report_layout.addRow("诊断", self.case_report_diagnosis)
-        report_layout.addRow("医嘱处方(单位克)", self.case_report_prescription)
+        report_layout.addRow("医嘱处方", self.case_report_prescription)
         report_layout.addRow("煎服用法", self.case_report_usage_summary)
         report_layout.addRow("禁忌", self.case_report_contraindication)
         report_layout.addRow("备注", self.case_report_special_note)
@@ -782,7 +787,8 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
             dose = self.m_tbl_DrugUsage.item(row, 2)
             decoction = self.m_tbl_DrugUsage.item(row, 3)
             if drug and drug.text().strip():
-                line = f"{drug.text().strip()} {dose.text().strip() if dose else ''}"
+                dose_text = dose.text().strip() if dose and dose.text().strip() else ""
+                line = f"{drug.text().strip()} {dose_text}g" if dose_text else drug.text().strip()
                 if decoction and decoction.text().strip():
                     line += f"（{decoction.text().strip()}）"
                 items.append(line.strip())
@@ -790,7 +796,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         # 医嘱处方按每行4味药排版，药物之间用固定空格分隔，左对齐。
         if not items:
             return ""
-        sep = "          "  # 10个空格分隔
+        sep = "     "  # 5个空格分隔（原10个减小一半）
         lines = []
         for start in range(0, len(items), 4):
             row_items = items[start:start + 4]
@@ -880,7 +886,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
             return
         marker = "1 延长处方用量时间原因：慢性病"
         note = self.case_report_special_note.toPlainText().strip()
-        if doses > 15 and marker not in note:
+        if doses > 5 and marker not in note:
             if not note or note == "无":
                 self.case_report_special_note.setPlainText(marker)
             else:
@@ -1170,6 +1176,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
 
         self.m_edt_DiagConcl_2.setText("")
         self.m_edt_Diagnote_4.setText("")
+        self.m_tbl_DrugUsage.blockSignals(True)
         self.m_tbl_DrugUsage.clearContents()
         self.m_tbl_DrugUsage.setRowCount(40)
         for row in range(40):
@@ -1177,6 +1184,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
             self.m_tbl_DrugUsage.setItem(row, 1, QTableWidgetItem(""))
             self.m_tbl_DrugUsage.setItem(row, 2, QTableWidgetItem(""))
             self.m_tbl_DrugUsage.setItem(row, 3, QTableWidgetItem(""))
+        self.m_tbl_DrugUsage.blockSignals(False)
         self.m_edt_acup.setText("")
         self.m_edtDosesNumber.setText("0")
         self.m_edtAcubNumber.setText("0")
@@ -2192,6 +2200,8 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
             self.m_edtTotalPrice.setText(str(row[8] or "0"))  # 总费用是第九个字段
 
             # 固定保留 40 个可编辑药物行；空行也可直接双击输入。
+            # 先阻塞信号，避免逐行 setItem 触发上百次级联同步（处方同步+煎法备注+数据库查询）
+            self.m_tbl_DrugUsage.blockSignals(True)
             self.m_tbl_DrugUsage.setRowCount(40)
             self.m_tbl_DrugUsage.setColumnCount(4)
 
@@ -2218,6 +2228,10 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
                 self.m_tbl_DrugUsage.setItem(i, 1, QtWidgets.QTableWidgetItem(str(drug)))
                 self.m_tbl_DrugUsage.setItem(i, 2, QtWidgets.QTableWidgetItem(str(usage)))
                 self.m_tbl_DrugUsage.setItem(i, 3, QtWidgets.QTableWidgetItem(str(decoction)))
+
+            # 恢复信号，手动同步一次处方和煎法备注
+            self.m_tbl_DrugUsage.blockSignals(False)
+            self._sync_case_report_prescription_from_table()
             # 隐藏编号列（此处原代码可能误写为m_lst_DrugUsage，应为m_tbl_DrugUsage）
             self.m_edt_Diagnote_4.setText(str(row[69] or " "))  # 备注
             self.m_tbl_DrugUsage.setColumnHidden(0, True)

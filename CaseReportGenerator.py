@@ -180,7 +180,7 @@ class CaseReportGenerator(PreviewGenerator):
         for label, value in fields:
             label_para = Paragraph(f"<b>{safe_text(label)}</b>", label_style)
             value_text = safe_text(value)
-            if label.startswith("医嘱处方(单位克)"):
+            if label.startswith("医嘱处方"):
                 # 保留药物间距，同时在每组间距后提供可分页断点。
                 value_text = value_text.replace("          ", "&#160;" * 10 + "&#8203;")
                 value_text = value_text.replace(" ", "&#160;")
@@ -298,7 +298,7 @@ class CaseReportGenerator(PreviewGenerator):
             ("过敏史：", self.case_report.get("过敏史", "")),
             ("个人史：", self.case_report.get("个人史", "")),
             ("诊断：", self.case_report.get("诊断", self.data.get("诊断", ""))),
-            ("医嘱处方(单位克)：", self._report_prescription()),
+            ("医嘱处方：", self._report_prescription()),
             ("煎服用法：", self._prescription_usage_text()),
             ("禁忌：", self.case_report.get("禁忌", "无")),
             ("备注：", self.case_report.get("备注", "无")),
@@ -321,7 +321,7 @@ class CaseReportGenerator(PreviewGenerator):
         rows = []
         for label, value in fields:
             safe_value = safe_text(value)
-            if label == "医嘱处方(单位克)":
+            if label == "医嘱处方":
                 # ReportLab Paragraph 会折叠普通空格；不可折叠空格才能稳定显示五格间距。
                 safe_value = safe_value.replace(" ", "&#160;")
             rows.append([Paragraph(f"<b>{safe_text(label)}</b>", label_style),
@@ -373,7 +373,7 @@ class CaseReportGenerator(PreviewGenerator):
                 continue
             dose = str(self.data.get(f"用量{i}", "") or "").strip()
             method = str(self.data.get(f"先煎后下{i}", "") or "").strip()
-            item = f"{name} {dose}克" if dose else name
+            item = f"{name} {dose}g" if dose else name
             if method:
                 item += f"（{method}）"
             medicines.append(item)
@@ -594,7 +594,7 @@ class PrescriptionReportGenerator(CaseReportGenerator):
             rows = []
             for label, value in fields:
                 text_value = safe_text(value)
-                if label == "医嘱处方(单位克)":
+                if label == "医嘱处方":
                     text_value = text_value.replace(" ", "&#160;")
                 rows.append([Paragraph(f"<b>{safe_text(label)}</b>", label_style),
                              Paragraph(text_value, value_style)])

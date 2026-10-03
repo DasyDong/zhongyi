@@ -3918,6 +3918,18 @@
    'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
    'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\wheel\\wheelfile.py',
    'PYMODULE'),
+  ('win32con',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\win32\\lib\\win32con.py',
+   'PYMODULE'),
+  ('win32evtlogutil',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\win32\\lib\\win32evtlogutil.py',
+   'PYMODULE'),
+  ('winerror',
+   'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
+   'CN\\ModularData\\ai-agent\\vm\\tools\\python\\lib\\site-packages\\win32\\lib\\winerror.py',
+   'PYMODULE'),
   ('xml',
    'C:\\Users\\dasy8\\AppData\\Roaming\\TRAE SOLO '
    'CN\\ModularData\\ai-agent\\vm\\tools\\python\\python310.zip\\xml\\__init__.pyc',
