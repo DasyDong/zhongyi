@@ -14,8 +14,8 @@ Types of import:
 IMPORTANT: Do NOT post this list to the issue-tracker. Use it as a basis for
             tracking down the missing module yourself. Thanks!
 
-missing module named org - imported by copy (top-level)
-missing module named 'org.python' - imported by pickle (top-level), xml.sax (top-level)
+missing module named 'org.python' - imported by copy (top-level), xml.sax (top-level)
+missing module named org - imported by pickle (top-level)
 missing module named pwd - imported by posixpath (top-level), subprocess (top-level), shutil (top-level), tarfile (top-level), pathlib (top-level), getpass (top-level), distutils.util (top-level), netrc (top-level), setuptools._vendor.backports.tarfile (optional), distutils.archive_util (top-level), http.server (top-level), webbrowser (top-level), setuptools._distutils.archive_util (top-level), setuptools._distutils.util (delayed, conditional, optional)
 missing module named grp - imported by subprocess (top-level), shutil (top-level), tarfile (top-level), pathlib (top-level), setuptools._vendor.backports.tarfile (optional), distutils.archive_util (top-level), setuptools._distutils.archive_util (top-level)
 missing module named posix - imported by os (top-level), shutil (top-level), importlib._bootstrap_external (top-level)

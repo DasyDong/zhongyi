@@ -268,10 +268,8 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
             QtWidgets.QSizePolicy.Expanding,
         )
         self.m_tbl_DrugUsage.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-        self.m_tbl_DrugUsage.setRowCount(40)
-        for row in range(40):
-            for column in range(4):
-                self.m_tbl_DrugUsage.setItem(row, column, QTableWidgetItem(""))
+        # 初始 5 行空行，用户填药后自动新增，最多 40 行
+        self._init_drug_table_rows()
         self.m_edtDosesNumber.textChanged.connect(self.calc_drug_total_price)
         self.m_edtAcubNumber.textChanged.connect(self.calc_acub_total_price)
 
@@ -654,7 +652,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         rx_usage_layout.addLayout(rx_usage_row_2)
         self.case_rx_usage_widget = QtWidgets.QWidget(self.groupBox_1)
         self.case_rx_usage_widget.setLayout(rx_usage_layout)
-        self.m_tbl_DrugUsage.itemChanged.connect(self._sync_case_report_prescription_from_table)
+        self.m_tbl_DrugUsage.itemChanged.connect(self._on_drug_table_changed)
         report_layout.addRow("主诉", self.case_report_chief_complaint)
         report_layout.addRow("现病史", self.case_report_present_history)
         report_layout.addRow("既往史", self.case_report_past_history)
@@ -697,6 +695,39 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         self.verticalLayout_2.insertWidget(drug_index + 1, self.m_bt_DeleteDrug)
         self.verticalLayout_2.insertWidget(drug_index + 2, self.case_rx_usage_widget)
         self.case_report_medication_method.hide()
+
+    def _on_drug_table_changed(self, item=None):
+        """中药治疗表格内容变化时：同步处方显示 + 自动新增行。"""
+        self._sync_case_report_prescription_from_table(item)
+        # 只有药物名称列（第1列）变化时才检查是否新增行
+        if item is None or item.column() == 1:
+            self._ensure_drug_table_row()
+
+    def _init_drug_table_rows(self, count=5):
+        """初始化中药治疗表格的空行，默认 5 行空行，最多 40 行。"""
+        count = min(max(count, 1), 40)
+        self.m_tbl_DrugUsage.setRowCount(count)
+        for row in range(count):
+            for column in range(4):
+                self.m_tbl_DrugUsage.setItem(row, column, QTableWidgetItem(""))
+            # 序号列填行号
+            self.m_tbl_DrugUsage.item(row, 0).setText(str(row + 1))
+
+    def _ensure_drug_table_row(self):
+        """确保表格最后一行有内容时自动新增一行（最多40行）。"""
+        row_count = self.m_tbl_DrugUsage.rowCount()
+        if row_count >= 40:
+            return
+        # 检查最后一行的药物名称列是否有内容
+        last_row = row_count - 1
+        drug_item = self.m_tbl_DrugUsage.item(last_row, 1)
+        if drug_item and drug_item.text().strip():
+            # 最后一行已有药物，新增一行空行
+            new_row = row_count
+            self.m_tbl_DrugUsage.insertRow(new_row)
+            for col in range(4):
+                self.m_tbl_DrugUsage.setItem(new_row, col, QTableWidgetItem(""))
+            self.m_tbl_DrugUsage.item(new_row, 0).setText(str(new_row + 1))
 
     def load_drug_names(self):
         """读取中药清单，供主界面药物列输入补全使用。"""
@@ -744,6 +775,18 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
             QMessageBox.information(self, "删除药物", "请先选中要删除的药物行")
             return
         self.m_tbl_DrugUsage.removeRow(row)
+        # 重新排列序号
+        for r in range(self.m_tbl_DrugUsage.rowCount()):
+            item = self.m_tbl_DrugUsage.item(r, 0)
+            if item:
+                item.setText(str(r + 1))
+        # 确保至少有 5 行（不足时在末尾补空行），最多 40 行
+        while self.m_tbl_DrugUsage.rowCount() < 5:
+            new_row = self.m_tbl_DrugUsage.rowCount()
+            self.m_tbl_DrugUsage.insertRow(new_row)
+            for col in range(4):
+                self.m_tbl_DrugUsage.setItem(new_row, col, QTableWidgetItem(""))
+            self.m_tbl_DrugUsage.item(new_row, 0).setText(str(new_row + 1))
         self._sync_case_report_prescription_from_table()
 
     def current_patient_id(self):
@@ -1178,12 +1221,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         self.m_edt_Diagnote_4.setText("")
         self.m_tbl_DrugUsage.blockSignals(True)
         self.m_tbl_DrugUsage.clearContents()
-        self.m_tbl_DrugUsage.setRowCount(40)
-        for row in range(40):
-            self.m_tbl_DrugUsage.setItem(row, 0, QTableWidgetItem(""))
-            self.m_tbl_DrugUsage.setItem(row, 1, QTableWidgetItem(""))
-            self.m_tbl_DrugUsage.setItem(row, 2, QTableWidgetItem(""))
-            self.m_tbl_DrugUsage.setItem(row, 3, QTableWidgetItem(""))
+        self._init_drug_table_rows(5)
         self.m_tbl_DrugUsage.blockSignals(False)
         self.m_edt_acup.setText("")
         self.m_edtDosesNumber.setText("0")
@@ -2199,11 +2237,11 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
             self.m_edtAcubPrice.setText(str(row[7] or "0"))  # 针灸费用是第八个字段
             self.m_edtTotalPrice.setText(str(row[8] or "0"))  # 总费用是第九个字段
 
-            # 固定保留 40 个可编辑药物行；空行也可直接双击输入。
+            # 根据实际药物数量动态设置行数（实际药味数 + 5行空白，最多40行）
             # 先阻塞信号，避免逐行 setItem 触发上百次级联同步（处方同步+煎法备注+数据库查询）
             self.m_tbl_DrugUsage.blockSignals(True)
-            self.m_tbl_DrugUsage.setRowCount(40)
             self.m_tbl_DrugUsage.setColumnCount(4)
+            self.m_tbl_DrugUsage.clearContents()
 
             nDrugRows = 0
             for i in range(40):
@@ -2211,8 +2249,13 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
                 if row[drug_index] is not None and row[drug_index] != "":
                     nDrugRows += 1
 
-            for i in range(40):
-                self.m_tbl_DrugUsage.setItem(i, 0, QtWidgets.QTableWidgetItem(number))
+            # 设置行数：实际药味数 + 5 行空白用于继续添加，上限 40 行
+            display_rows = min(nDrugRows + 5, 40)
+            if display_rows < 5:
+                display_rows = 5
+            self.m_tbl_DrugUsage.setRowCount(display_rows)
+            for i in range(display_rows):
+                self.m_tbl_DrugUsage.setItem(i, 0, QtWidgets.QTableWidgetItem(str(i + 1)))
                 self.m_tbl_DrugUsage.setItem(i, 1, QtWidgets.QTableWidgetItem(""))
                 self.m_tbl_DrugUsage.setItem(i, 2, QtWidgets.QTableWidgetItem(""))
                 self.m_tbl_DrugUsage.setItem(i, 3, QtWidgets.QTableWidgetItem(""))
@@ -2224,10 +2267,10 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
                 drug = str(row[drug_index])
                 usage = row[usage_index]
                 decoction = row[decoction_index]
-                # 覆盖空行中的药物和用量列
+                # 填充药物和用量列
                 self.m_tbl_DrugUsage.setItem(i, 1, QtWidgets.QTableWidgetItem(str(drug)))
-                self.m_tbl_DrugUsage.setItem(i, 2, QtWidgets.QTableWidgetItem(str(usage)))
-                self.m_tbl_DrugUsage.setItem(i, 3, QtWidgets.QTableWidgetItem(str(decoction)))
+                self.m_tbl_DrugUsage.setItem(i, 2, QtWidgets.QTableWidgetItem(str(usage) if usage else ""))
+                self.m_tbl_DrugUsage.setItem(i, 3, QtWidgets.QTableWidgetItem(str(decoction) if decoction else ""))
 
             # 恢复信号，手动同步一次处方和煎法备注
             self.m_tbl_DrugUsage.blockSignals(False)
