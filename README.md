@@ -1,5 +1,3 @@
-![Image](https://github.com/franklenglw/zhongyi/blob/main/Assets/don.png)  
-
 清虚内守中医处方  
 ---------------
 本软件为绿色免安装版，软件在右边的Releases中，下载ZhongYi.zip压缩包，解压后双击zhongyi.exe即可运行。  
