@@ -15,26 +15,57 @@ from Database_connection import load_db_config
 from PySide6.QtWidgets import QMessageBox
 
 # ================== 字体注册配置 ==================
+import os
+import sys
+
+def _get_system_font_paths():
+    """获取各平台系统字体目录"""
+    if sys.platform == 'win32':
+        windir = os.environ.get('WINDIR', r'C:\Windows')
+        return [os.path.join(windir, 'Fonts')]
+    elif sys.platform == 'darwin':
+        return ['/System/Library/Fonts', '/Library/Fonts']
+    else:
+        return ['/usr/share/fonts', '/usr/local/share/fonts']
+
+SYSTEM_FONT_DIRS = _get_system_font_paths()
+
+def _find_font_file(filename):
+    """在系统字体目录和当前目录中查找字体文件"""
+    if os.path.exists(filename):
+        return filename
+    for d in SYSTEM_FONT_DIRS:
+        fullpath = os.path.join(d, filename)
+        if os.path.exists(fullpath):
+            return fullpath
+    return None
+
 FONT_DEFINITIONS = [
-    {'name': 'Microsoft YaHei', 'path': 'msyh.ttf'},  # 微软雅黑
-    {'name': 'STSong', 'path': 'STSONG.TTF'},  # 宋体
-    {'name': 'SimHei', 'path': 'simhei.ttf'},  # 黑体
-    {'name': 'FangSong', 'path': 'simfang.ttf'},  # 仿宋
-    {'name': 'KaiTi', 'path': 'simkai.ttf'},  # 楷体
+    {'name': 'SimHei', 'filename': 'simhei.ttf'},         # 黑体（笔画最粗，打印清晰）
+    {'name': 'Microsoft YaHei', 'filename': 'msyh.ttc'},  # 微软雅黑
+    {'name': 'Microsoft YaHei Bold', 'filename': 'msyhbd.ttc'},  # 微软雅黑粗体
+    {'name': 'STSong', 'filename': 'STSONG.TTF'},         # 宋体
+    {'name': 'FangSong', 'filename': 'simfang.ttf'},      # 仿宋
+    {'name': 'KaiTi', 'filename': 'simkai.ttf'},          # 楷体
+    {'name': 'STHeiti', 'filename': 'STHeiti Medium.ttc'},  # Mac 黑体
 ]
 
 # 尝试注册字体，选择第一个可用的
 registered_font_name = None
 for font in FONT_DEFINITIONS:
-    try:
-        pdfmetrics.registerFont(TTFont(font['name'], font['path']))
-        registered_font_name = font['name']
-        break
-    except Exception as e:
-        print(f"字体注册失败 {font['name']}: {str(e)}")
+    font_path = _find_font_file(font['filename'])
+    if font_path:
+        try:
+            pdfmetrics.registerFont(TTFont(font['name'], font_path))
+            registered_font_name = font['name']
+            print(f"已注册字体: {font['name']} ({font_path})")
+            break
+        except Exception as e:
+            print(f"字体注册失败 {font['name']}: {str(e)}")
 
 if not registered_font_name:
-    raise RuntimeError("无法注册任何中文字体，请检查字体文件是否存在")
+    registered_font_name = 'Helvetica'
+    print("警告: 未找到任何中文字体，将使用 Helvetica（中文可能显示异常）")
 
 
 class PreviewGenerator:
@@ -47,7 +78,9 @@ class PreviewGenerator:
         self.line_height = 0.8 * cm
         self.data = None
         self.withoutdiagprint = False
-        self.footer_height = 3 * cm  # 预估页脚高度
+        # 页脚实际只有一到两行（主治医师及诊所联系方式），避免预留过大
+        # 导致病例报告的禁忌、备注被提前挤到第二页。
+        self.footer_height = 0.5 * cm
         self.font_name = registered_font_name  # 使用注册的字体名称
 
     def add_newlines_by_width(self, text, max_width, font_name, font_size, canvas):
@@ -135,21 +168,8 @@ class PreviewGenerator:
         base_data = cursor.fetchone() or {"诊所名称": "", "处方抬头": ""}
 
         # 获取常规资料
-        cursor.execute("""
-            SELECT 
-                主治医生, 病历号, 诊金,
-                住址 AS 地址, 电话,
-                姓名, 性别, 年龄, 诊断, 日期时间, 辨证, 用法, 剂数, 
-                针灸或其他, 针灸次数, 药费, 针灸费用, 总费用, 备注,
-                病证, 药物1, 药物2, 药物3, 药物4, 药物5, 药物6, 药物7, 药物8, 药物9, 药物10,
-                药物11, 药物12, 药物13, 药物14, 药物15, 药物16, 药物17, 药物18, 药物19, 药物20,
-                用量1, 用量2, 用量3, 用量4, 用量5, 用量6, 用量7, 用量8, 用量9, 用量10,
-                用量11, 用量12, 用量13, 用量14, 用量15, 用量16, 用量17, 用量18, 用量19, 用量20,
-                先煎后下1, 先煎后下2, 先煎后下3, 先煎后下4, 先煎后下5, 先煎后下6, 先煎后下7, 先煎后下8, 先煎后下9, 先煎后下10,
-                先煎后下11, 先煎后下12, 先煎后下13, 先煎后下14, 先煎后下15, 先煎后下16, 先煎后下17, 先煎后下18, 先煎后下19, 先煎后下20
-            FROM 常规资料 
-            WHERE 编号 = %s
-        """, (self.patient_id,))
+        # 统一读取整行，新增的 21~40 味字段无需再次维护显式列清单。
+        cursor.execute("SELECT * FROM 常规资料 WHERE 编号 = %s", (self.patient_id,))
         medical_data = cursor.fetchone() or {}
 
         conn.commit()
@@ -214,7 +234,8 @@ class PreviewGenerator:
         self._draw_underline(c)
         self.y_position -= 1.0 * cm
 
-        line4 = f"地址：{self.data.get('地址', '')}"
+        address = self.data.get("地址") or self.data.get("住址", "")
+        line4 = f"地址：{address}"
         c.drawString(2 * cm, self.y_position, line4)
         linephone = f"电话：{self.data.get('电话', '')}"
         phonestring_width = c.stringWidth(linephone, self.font_name, 13)
@@ -309,7 +330,7 @@ class PreviewGenerator:
 
         # 4. 打印药品信息（成对显示剂数）
         drug_data = []
-        for i in range(1, 21):
+        for i in range(1, 41):
             if self.data.get(f"药物{i}", "") and self.data.get(f"用量{i}", ""):
                 drug = self.data.get(f"药物{i}", "").strip()
                 dosage = self.data.get(f"用量{i}", "").strip() + "克"

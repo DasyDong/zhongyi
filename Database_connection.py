@@ -16,6 +16,12 @@ from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad, unpad
 from Crypto.Hash import SHA256
 from Crypto.Random import get_random_bytes
+from path_utils import app_data_path
+
+
+def _config_file_path():
+    """数据库配置文件路径（用户数据目录）。"""
+    return app_data_path("Link_loop.enc")
 
 
 class DatabaseConnectionDialog(QDialog):
@@ -119,13 +125,13 @@ class DatabaseConnectionDialog(QDialog):
         cipher = AES.new(key, AES.MODE_CBC, iv)
         ct_bytes = cipher.encrypt(pad(data, AES.block_size))
 
-        with open("Link_loop.enc", "wb") as f:
+        with open(_config_file_path(), "wb") as f:
             f.write(iv)
             f.write(ct_bytes)
 
 def load_db_config(self=None):
     try:
-        with open("Link_loop.enc", "rb") as f:
+        with open(_config_file_path(), "rb") as f:
             iv = f.read(16)
             ciphertext = f.read()
 
@@ -144,7 +150,7 @@ def load_db_config(self=None):
         sys.exit(1)
 
 def check_and_show_config():
-    if not os.path.exists("Link_loop.enc"):
+    if not os.path.exists(_config_file_path()):
         app = QApplication.instance()
         if not app:
             app = QApplication(sys.argv)

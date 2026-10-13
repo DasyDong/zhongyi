@@ -8,6 +8,7 @@ from PySide6.QtGui import (QPixmap, QColor, QTextCursor, QTextBlock,
 from PySide6.QtWidgets import (QDialog, QTableWidgetItem, QMessageBox,
                                QFileDialog, QTextEdit, QHBoxLayout, QVBoxLayout,
                                QLabel, QToolButton, QStyle, QApplication,
+                               QPushButton, QLineEdit,
                                QScrollArea, QTableWidget, QHeaderView, QGroupBox)
 from ui_PatientList import Ui_Dialog
 import pymysql
@@ -134,6 +135,7 @@ class ComparisonDialog(QDialog):
         self.table.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
         self.table.horizontalHeader().setSectionResizeMode(2, QHeaderView.Stretch)
         self.table.verticalHeader().setVisible(False)
+        self.table.setWordWrap(True)
 
         self.table.setRowCount(len(columns))
         for row, (col_name, val1, val2) in enumerate(zip(columns, data1, data2)):
@@ -146,14 +148,14 @@ class ComparisonDialog(QDialog):
             item1 = QTableWidgetItem(val1 if val1 else "")
             item1.setFlags(item1.flags() & ~Qt.ItemIsEditable)  # 设置为不可编辑
             item1.setTextAlignment(Qt.AlignTop | Qt.AlignLeft)  # 设置文本对齐方式
-            item1.setFlags(item1.flags() | Qt.TextWordWrap)  # 启用文本自动换行
+            # 自动换行由表格级 setWordWrap 控制
             self.table.setItem(row, 1, item1)
 
             # 设置比较对象：乙列的内容
             item2 = QTableWidgetItem(val2 if val2 else "")
             item2.setFlags(item2.flags() & ~Qt.ItemIsEditable)  # 设置为不可编辑
             item2.setTextAlignment(Qt.AlignTop | Qt.AlignLeft)  # 设置文本对齐方式
-            item2.setFlags(item2.flags() | Qt.TextWordWrap)  # 启用文本自动换行
+            # 自动换行由表格级 setWordWrap 控制
             self.table.setItem(row, 2, item2)
 
             if val1 != val2:
@@ -494,6 +496,249 @@ class PatientListWindow(QDialog, Ui_Dialog):
         ]
         values = [self.get_cell_text(row, col) for col, _ in compare_columns]
         return [name for _, name in compare_columns], values
+
+    def closeEvent(self, event):
+        if self.conn:
+            self.conn.close()
+        event.accept()
+
+
+class PatientViewerWindow(QDialog):
+    """查看患者：基础资料列表及病例详情、病例报告、处方报告入口。"""
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("查看患者")
+        self.resize(1200, 700)
+        self.conn = None
+        self.detail_windows = []
+
+        layout = QVBoxLayout(self)
+        toolbar = QHBoxLayout()
+        toolbar.addWidget(QLabel("查询："))
+        self.search_edit = QLineEdit(self)
+        self.search_edit.setPlaceholderText("输入病例号、姓名、性别、年龄、住址查询")
+        toolbar.addWidget(self.search_edit)
+        toolbar.addStretch()
+        self.new_patient_button = QPushButton("新增患者", self)
+        self.new_patient_button.setObjectName("primarySaveButton")
+        self.new_patient_button.setStyleSheet(
+            "QPushButton { background: #1976d2; color: white; padding: 6px 16px; "
+            "border: 1px solid #125aa0; border-radius: 4px; }"
+            "QPushButton:hover { background: #1565c0; }"
+        )
+        toolbar.addWidget(self.new_patient_button)
+        layout.addLayout(toolbar)
+
+        self.table = QTableWidget(self)
+        self.headers = ["ID主键号", "病例号", "姓名", "性别", "年龄", "住址", "创建时间",
+                        "病例详情", "复诊", "病例报告", "处方报告", "删除"]
+        self.table.setColumnCount(len(self.headers))
+        self.table.setHorizontalHeaderLabels(self.headers)
+        self.table.setSelectionBehavior(QTableWidget.SelectRows)
+        self.table.setEditTriggers(QTableWidget.NoEditTriggers)
+        self.table.setMinimumHeight(10 * 30)
+        self.table.verticalHeader().setDefaultSectionSize(30)
+        self.table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        layout.addWidget(self.table)
+
+        self.search_edit.textChanged.connect(self.filter_rows)
+        self.new_patient_button.clicked.connect(self.open_new_patient)
+        self.init_db()
+        self.load_data()
+
+    def init_db(self):
+        try:
+            self.conn = pymysql.connect(**load_db_config())
+        except Exception as e:
+            QMessageBox.critical(self, "错误", f"数据库连接失败：{e}")
+            self.close()
+
+    def load_data(self):
+        if not self.conn:
+            return
+        try:
+            with self.conn.cursor() as cursor:
+                cursor.execute("""
+                    SELECT 编号, 病历号, 姓名, 性别, 年龄, 住址, 日期时间
+                    FROM 常规资料 ORDER BY 编号 DESC
+                """)
+                rows = cursor.fetchall()
+            self.table.setRowCount(0)
+            for patient_id, case_number, name, gender, age, address, created_at in rows:
+                row = self.table.rowCount()
+                self.table.insertRow(row)
+                values = [patient_id, case_number, name, gender, age, address, created_at]
+                for col, value in enumerate(values):
+                    item = QTableWidgetItem("" if value is None else str(value))
+                    if col == 0:
+                        # 第一列直接显示数据库主键，所有操作仍使用该主键。
+                        item.setData(Qt.UserRole, patient_id)
+                    self.table.setItem(row, col, item)
+
+                self._add_action_button(row, 7, "病例详情",
+                                        lambda checked=False, pid=patient_id: self.open_detail(pid))
+                self._add_action_button(row, 8, "复诊",
+                                        lambda checked=False, pid=patient_id: self.open_followup(pid))
+                self._add_action_button(row, 9, "病例报告",
+                                        lambda checked=False, pid=patient_id: self.open_report(pid, False))
+                self._add_action_button(row, 10, "处方报告",
+                                        lambda checked=False, pid=patient_id: self.open_report(pid, True))
+                self._add_action_button(row, 11, "删除",
+                                        lambda checked=False, pid=patient_id: self.delete_patient(pid))
+        except Exception as e:
+            QMessageBox.warning(self, "错误", f"患者列表加载失败：{e}")
+
+    def _add_action_button(self, row, col, text, slot):
+        button = QPushButton(text, self.table)
+        button.setStyleSheet(
+            "QPushButton { background: #1976d2; color: white; padding: 4px 12px; "
+            "border: 1px solid #125aa0; border-radius: 4px; }"
+            "QPushButton:hover { background: #1565c0; }"
+            "QPushButton:pressed { background: #0d47a1; }"
+        )
+        button.clicked.connect(slot)
+        self.table.setCellWidget(row, col, button)
+
+    def filter_rows(self, text):
+        keyword = text.strip().lower()
+        for row in range(self.table.rowCount()):
+            matched = not keyword
+            for col in range(7):
+                item = self.table.item(row, col)
+                if item and keyword in item.text().lower():
+                    matched = True
+                    break
+            self.table.setRowHidden(row, not matched)
+
+    def open_detail(self, patient_id):
+        """打开与主界面一致的完整患者详情，并填充全部字段。"""
+        try:
+            self._open_patient_window(patient_id)
+        except Exception as e:
+            QMessageBox.critical(self, "病例详情", f"打开病例详情失败：{e}")
+
+    def _open_patient_window(self, patient_id=None):
+        """复用原主界面；传入患者编号时先完整载入该患者资料。"""
+        from main_window_system import MyMainWindow
+
+        parent_window = self.parent()
+        reuse_parent = isinstance(parent_window, MyMainWindow)
+        window = parent_window if reuse_parent else MyMainWindow(parent_window.current_user_id)
+        if patient_id is not None:
+            patient_id = str(patient_id)
+            window._active_patient_id = patient_id
+
+            # 不依赖新窗口列表的加载时机，直接按数据库主键加载完整患者资料。
+            data = window.m_databaseUtil.query_database_info(
+                """SELECT 姓名,性别,年龄,病证,诊断,血压,住址,电话,病历号,身份证号
+                   FROM 常规资料 WHERE 编号 = %s""",
+                patient_id,
+            )
+            if data is None:
+                raise ValueError(f"未找到编号为 {patient_id} 的患者记录")
+            window.display_patient_info(data)
+            window.query_and_fill_data(patient_id)
+            window.load_case_report(patient_id)
+
+            # 同步主界面左侧查询表格的当前行，保证保存、复诊等操作使用该患者。
+            for row in range(window.m_tle_Basic_Filter.rowCount()):
+                item = window.m_tle_Basic_Filter.item(row, 0)
+                if item and item.text().strip() == patient_id:
+                    window.m_tle_Basic_Filter.setCurrentCell(row, 1)
+                    window.m_tle_Basic_Filter.selectRow(row)
+                    break
+        window.showMaximized()
+        if reuse_parent:
+            # 本窗口由 exec() 打开，必须结束弹窗事件循环，否则原主窗口仍被模态阻塞。
+            self.accept()
+        else:
+            self.detail_windows.append(window)
+            self.hide()
+        if patient_id is not None and not reuse_parent:
+            # MyMainWindow 构造函数会默认选中查询列表第一行。延迟到事件循环
+            # 完成后再次回填，避免默认行覆盖从“查看患者”传入的目标患者。
+            QTimer.singleShot(
+                0,
+                lambda w=window, pid=str(patient_id):
+                    self._force_patient_selection(w, pid),
+            )
+        return window
+
+    def _force_patient_selection(self, window, patient_id):
+        """在主界面完成显示后，强制保持查看患者传入的患者。"""
+        try:
+            item = None
+            for row in range(window.m_tle_Basic_Filter.rowCount()):
+                candidate = window.m_tle_Basic_Filter.item(row, 0)
+                if candidate and candidate.text().strip() == str(patient_id):
+                    item = candidate
+                    window.m_tle_Basic_Filter.setCurrentCell(row, 1)
+                    window.m_tle_Basic_Filter.selectRow(row)
+                    break
+            if item is None:
+                raise ValueError(f"病例查询列表中未找到患者编号 {patient_id}")
+
+            # 显式调用原有加载函数，确保基础资料、处方和病例报告全部以
+            # 当前点击的患者为准，而不是依赖表格信号的触发顺序。
+            window.on_row_basic_filter_click(item)
+        except Exception as e:
+            QMessageBox.critical(self, "病例详情", f"加载当前患者失败：{e}")
+
+    def open_new_patient(self):
+        """新增患者：复用主界面原有的初诊逻辑。"""
+        try:
+            window = self._open_patient_window()
+            window.handle_firstvisit_click()
+        except Exception as e:
+            QMessageBox.critical(self, "新增患者", f"打开新增患者界面失败：{e}")
+
+    def open_followup(self, patient_id):
+        """复诊：先载入原患者全部资料，再复用主界面原有复诊逻辑。"""
+        try:
+            window = self._open_patient_window(patient_id)
+            window.handle_secondvisit_click()
+        except Exception as e:
+            QMessageBox.critical(self, "复诊", f"打开复诊界面失败：{e}")
+
+    def open_report(self, patient_id, prescription_only):
+        try:
+            from CaseReportGenerator import (CaseReportGenerator,
+                                              PrescriptionReportGenerator)
+            generator_cls = PrescriptionReportGenerator if prescription_only else CaseReportGenerator
+            generator = generator_cls(patient_id, self.parent().current_user_id)
+            pdf_data = generator.generate().getvalue()
+            from PdfViewerDialog import PdfViewerDialog
+            viewer = PdfViewerDialog(pdf_data, self)
+            viewer.exec()
+        except Exception as e:
+            QMessageBox.critical(self, "报告", f"生成报告失败：{e}")
+
+    def delete_patient(self, patient_id):
+        """删除患者整条常规资料记录。"""
+        row = next((r for r in range(self.table.rowCount())
+                    if not self.table.isRowHidden(r)
+                    and self.table.item(r, 0)
+                    and self.table.item(r, 0).data(Qt.UserRole) == patient_id), None)
+        name = self.table.item(row, 1).text() if row is not None else ""
+        answer = QMessageBox.question(
+            self,
+            "确认删除",
+            f"确定删除患者“{name}”的全部资料吗？此操作不可恢复。",
+            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.No,
+        )
+        if answer != QMessageBox.Yes:
+            return
+        try:
+            with self.conn.cursor() as cursor:
+                cursor.execute("DELETE FROM `常规资料` WHERE `编号`=%s", (patient_id,))
+            self.conn.commit()
+            self.load_data()
+            QMessageBox.information(self, "删除成功", "患者资料已删除")
+        except Exception as e:
+            self.conn.rollback()
+            QMessageBox.critical(self, "删除失败", f"删除患者资料失败：{e}")
 
     def closeEvent(self, event):
         if self.conn:

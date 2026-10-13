@@ -2,7 +2,7 @@ import sys
 import os
 import json
 import pymysql
-from PySide6.QtGui import QFont
+from PySide6.QtGui import QFont, QPixmap, QIcon
 from PySide6.QtWidgets import (
     QDialog,
     QApplication,
@@ -10,7 +10,9 @@ from PySide6.QtWidgets import (
     QMessageBox,
     QInputDialog, QVBoxLayout, QLabel, QDialogButtonBox
 )
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QTimer
+from path_utils import resource_path
+
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import unpad
 from Crypto.Hash import SHA256
@@ -60,11 +62,56 @@ class LoginDialog(QDialog, Ui_Login_Dialog):
         self.setWindowFlags(self.windowFlags() & ~Qt.WindowContextHelpButtonHint)
         self.setWindowTitle("登录界面")
 
+        # 设置窗口图标
+        icon_path = resource_path("images/app_icon.png")
+        if os.path.exists(icon_path):
+            self.setWindowIcon(QIcon(icon_path))
+
+        # 重新组织登录界面布局：顶部图片 + 底部白色登录区
+        self._setup_login_layout()
+
         self.db_config = self.load_db_config()
 
+    def _setup_login_layout(self):
+        """给登录表单加白色背景卡片，确保在图片上清晰可见。"""
+        from PySide6.QtWidgets import QWidget, QVBoxLayout
+
+        # 设置登录背景图（使用 resource_path 兼容打包环境）
+        bg_path = resource_path("images/login_bg.png")
+        if os.path.exists(bg_path):
+            self.Backgroup_img.setStyleSheet(
+                "#Backgroup_img {"
+                "background-image: url(%s);"
+                "background-position: top center;"
+                "background-repeat: no-repeat;"
+                "background-color: #e0e0e0;"
+                "}"
+                % bg_path.replace("\\", "/")
+            )
+
+        # 创建白色背景卡片包裹登录表单
+        white_panel = QWidget(self.Backgroup_img)
+        white_panel.setStyleSheet(
+            "background-color: rgba(255, 255, 255, 245);"
+            "border-radius: 10px;"
+        )
+        white_layout = QVBoxLayout(white_panel)
+        white_layout.setContentsMargins(35, 25, 35, 25)
+
+        # 从 gridLayout 中找到 InputSection 并移到白色卡片里
+        for i in range(self.gridLayout.count()):
+            item = self.gridLayout.itemAt(i)
+            if item.layout() is self.InputSection:
+                pos = self.gridLayout.getItemPosition(i)
+                self.gridLayout.removeItem(item)
+                white_layout.addLayout(self.InputSection)
+                self.gridLayout.addWidget(white_panel, pos[0], pos[1], pos[2], pos[3])
+                break
+
     def load_db_config(self):
+        from Database_connection import _config_file_path
         try:
-            with open("Link_loop.enc", "rb") as f:
+            with open(_config_file_path(), "rb") as f:
                 iv = f.read(16)
                 ciphertext = f.read()
 
@@ -133,6 +180,8 @@ class LoginDialog(QDialog, Ui_Login_Dialog):
         self.main_window = MyMainWindow(user_id)  # ✅ 通过构造函数传递
         self.main_window.show()
         self.close()
+        # 登录后默认打开"查看患者"界面
+        QTimer.singleShot(100, self.main_window.show_patient_list)
 
     def resizeEvent(self, event):
         self.Backgroup_img.setGeometry(0, 0, self.width(), self.height())
@@ -316,6 +365,10 @@ class LoginDialog(QDialog, Ui_Login_Dialog):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
+    # 设置应用程序图标（任务栏图标）
+    icon_path = resource_path("images/app_icon.png")
+    if os.path.exists(icon_path):
+        app.setWindowIcon(QIcon(icon_path))
     # 设置默认区域为中文
     locale = QLocale(QLocale.Chinese, QLocale.China)
     QLocale.setDefault(locale)
@@ -333,6 +386,13 @@ if __name__ == "__main__":
     system_font.setPointSize(10)
     system_font.setStyleStrategy(QFont.StyleStrategy.PreferAntialias)
     app.setFont(system_font)
+    # 全部功能界面的保存/删除按钮统一颜色；对象自身样式可继续覆盖布局细节。
+    app.setStyleSheet("""
+        QPushButton[text=\"保存\"] { background-color: #1976d2; color: white; border: 1px solid #125aa0; }
+        QPushButton[text=\"保存\"]:hover { background-color: #1565c0; }
+        QPushButton[text=\"删除\"] { background-color: #d32f2f; color: white; border: 1px solid #a52222; }
+        QPushButton[text=\"删除\"]:hover { background-color: #b71c1c; }
+    """)
 
     if not os.path.exists("Link_loop.enc"):
         from Database_connection import check_and_show_config
